@@ -1,0 +1,20 @@
+{
+  "files": [],
+  "references": [
+    {
+      "path": "./packages/engineering-types"
+    },
+    {
+      "path": "./packages/engineering-validation"
+    },
+    {
+      "path": "./packages/engineering-units"
+    },
+    {
+      "path": "./packages/engineering-core"
+    },
+    {
+      "path": "./packages/solar-engine"
+    }
+  ]
+}
