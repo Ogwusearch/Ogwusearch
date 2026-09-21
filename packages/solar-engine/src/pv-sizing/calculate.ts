@@ -1,7 +1,7 @@
 import type { PVSizingInput, PVSizingValue } from "./types";
 
 export function calculatePVSizing(
-  input: PVSizingInput
+  input: PVSizingInput,
 ): PVSizingValue {
   const {
     dailyEnergyKWh,
@@ -10,15 +10,16 @@ export function calculatePVSizing(
     panelPowerW,
   } = input;
 
-  // 1. Energy required from the PV system before losses
+  // Energy that must be supplied by the PV system
+  // after accounting for system losses.
   const requiredPVEnergyKWh =
     dailyEnergyKWh / systemEfficiency;
 
-  // 2. Required PV array power
+  // Required PV array power.
   const requiredPVPowerW =
     (requiredPVEnergyKWh / peakSunHours) * 1000;
 
-  // 3. Convert watts to kilowatts
+  // Convert watts to kilowatts.
   const requiredPVPowerKW =
     requiredPVPowerW / 1000;
 
@@ -28,27 +29,26 @@ export function calculatePVSizing(
     requiredPVEnergyKWh,
   };
 
-  // Optional panel sizing
+  // Optional physical panel sizing.
   if (panelPowerW !== undefined) {
-    // 4. Number of panels required
+    // Round up because a fractional panel cannot be installed.
     const requiredPanelCount =
       Math.ceil(requiredPVPowerW / panelPowerW);
 
-    // 5. Actual installed PV capacity
+    // Actual installed capacity after rounding panel count.
     const installedPVCapacityW =
       requiredPanelCount * panelPowerW;
 
     const installedPVCapacityKW =
       installedPVCapacityW / 1000;
 
-    // 6. Additional capacity installed above calculated requirement
+    // Capacity installed above the calculated requirement.
     const oversizingW =
       installedPVCapacityW - requiredPVPowerW;
 
     const oversizingKW =
       oversizingW / 1000;
 
-    // 7. Oversizing ratio
     const oversizingRatio =
       oversizingW / requiredPVPowerW;
 

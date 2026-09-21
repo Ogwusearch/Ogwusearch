@@ -1,3 +1,4 @@
+
 import type {
   EngineeringMetadata,
   EngineeringResult,
@@ -5,20 +6,20 @@ import type {
 
 import type { EngineeringModule } from "./module";
 
-export function runEngineeringModule<
-  I,
-  V extends I,
-  O
->(
+const DEFAULT_ENGINE_VERSION = "0.1.0";
+const DEFAULT_CALCULATION_VERSION = "0.1.0";
+const DEFAULT_MODULE_VERSION = "0.1.0";
+
+export function runEngineeringModule<I, V extends I, O>(
   input: I,
   module: EngineeringModule<I, V, O>,
   metadata?: EngineeringMetadata,
 ): EngineeringResult<O> {
   const resolvedMetadata: EngineeringMetadata =
     metadata ?? {
-      engineVersion: "0.1.0",
-      calculationVersion: "0.1.0",
-      moduleVersion: "0.1.0",
+      engineVersion: DEFAULT_ENGINE_VERSION,
+      calculationVersion: DEFAULT_CALCULATION_VERSION,
+      moduleVersion: DEFAULT_MODULE_VERSION,
       calculatedAt: new Date().toISOString(),
     };
 

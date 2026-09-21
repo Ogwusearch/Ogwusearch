@@ -40,7 +40,8 @@ const testModule: EngineeringModule<
           {
             code: "NEGATIVE_VALUE",
             field: "value",
-            message: "Value must be greater than or equal to zero.",
+            message:
+              "Value must be greater than or equal to zero.",
             severity: "error",
           },
         ],
@@ -69,7 +70,9 @@ const testModule: EngineeringModule<
             expression: "doubled = value × 2",
           },
         ],
+
         assumptions: [],
+
         intermediateValues: [
           {
             name: "Input Value",
@@ -80,14 +83,12 @@ const testModule: EngineeringModule<
             value: input.value * 2,
           },
         ],
+
         constants: [],
         steps: [],
       },
     };
   },
-  run: function (input: TestInput): EngineeringResult<TestOutput> {
-    throw new Error("Function not implemented.");
-  }
 };
 
 describe("runEngineeringModule", () => {
@@ -136,11 +137,10 @@ describe("runEngineeringModule", () => {
   });
 
   it("uses default metadata when metadata is not provided", () => {
-    const result =
-      runEngineeringModule(
-        { value: 5 },
-        testModule,
-      );
+    const result = runEngineeringModule(
+      { value: 5 },
+      testModule,
+    );
 
     expect(result.success).toBe(true);
 
@@ -160,12 +160,11 @@ describe("runEngineeringModule", () => {
   });
 
   it("preserves calculation trace", () => {
-    const result =
-      runEngineeringModule(
-        { value: 7 },
-        testModule,
-        metadata,
-      );
+    const result = runEngineeringModule(
+      { value: 7 },
+      testModule,
+      metadata,
+    );
 
     expect(result.success).toBe(true);
 
@@ -233,17 +232,13 @@ describe("runEngineeringModule", () => {
           },
         };
       },
-      run: function (input: TestInput): EngineeringResult<TestOutput> {
-        throw new Error("Function not implemented.");
-      }
     };
 
-    const result =
-      runEngineeringModule(
-        { value: 10 },
-        module,
-        metadata,
-      );
+    const result = runEngineeringModule(
+      { value: 10 },
+      module,
+      metadata,
+    );
 
     expect(result.success).toBe(false);
     expect(calculationCalled).toBe(false);

@@ -1,3 +1,4 @@
+
 import type { CalculationTrace } from "@ogwusearch/engineering-types";
 
 export function createTrace(): CalculationTrace {

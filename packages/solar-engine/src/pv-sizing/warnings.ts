@@ -1,68 +1,58 @@
-import type {
-  EngineeringMessage,
-  PVSizingInput,
-  PVSizingValue,
-} from "./types";
+import type { ValidationResult } from "@ogwusearch/engineering-validation";
 
+import { PV_SIZING_CONSTANTS } from "./constants";
+import type { PVSizingInput, PVSizingValue } from "./types";
+
+/**
+ * PV sizing validation warning codes.
+ *
+ * Warnings indicate conditions that do not invalidate
+ * the calculation but may require engineering review.
+ */
+export const PV_SIZING_WARNING_CODES = {
+  LOW_PEAK_SUN_HOURS:
+    "PV_SIZING_LOW_PEAK_SUN_HOURS",
+} as const;
+
+export type PVSizingWarningCode =
+  (typeof PV_SIZING_WARNING_CODES)[keyof typeof PV_SIZING_WARNING_CODES];
+
+/**
+ * Generate engineering warnings for PV sizing.
+ */
 export function generatePVSizingWarnings(
   input: PVSizingInput,
   value: PVSizingValue,
-): EngineeringMessage[] {
-  const warnings: EngineeringMessage[] = [];
+): ValidationResult["warnings"] {
+  const warnings: ValidationResult["warnings"] = [];
 
-  // Low system efficiency means significantly more PV capacity is required.
-  if (input.systemEfficiency < 0.75) {
+  const addWarning = (
+    code: string,
+    message: string,
+    field: string,
+    value?: unknown,
+  ): void => {
     warnings.push({
-      code: "LOW_SYSTEM_EFFICIENCY",
-      field: "systemEfficiency",
-      message:
-        "System efficiency is below 75%. The required PV capacity may be significantly increased.",
-      value: input.systemEfficiency,
+      code,
+      field,
+      message,
+      ...(value !== undefined ? { value } : {}),
+      severity: "warning",
     });
-  }
+  };
 
-  // Very low peak sun hours can produce a large PV array requirement.
-  if (input.peakSunHours < 3) {
-    warnings.push({
-      code: "LOW_PEAK_SUN_HOURS",
-      field: "peakSunHours",
-      message:
-        "Peak sun hours are below 3 hours. The calculated PV capacity may be relatively large.",
-      value: input.peakSunHours,
-    });
-  }
-
-  // Warn when installed capacity substantially exceeds calculated requirement.
   if (
-    value.oversizingPercent !== undefined &&
-    value.oversizingPercent > 20
+    Number.isFinite(input.peakSunHours) &&
+    input.peakSunHours > 0 &&
+    input.peakSunHours <
+      PV_SIZING_CONSTANTS.lowPeakSunHours
   ) {
-    warnings.push({
-      code: "HIGH_PV_OVERSIZING",
-      field: "panelPowerW",
-      message:
-        "Installed PV capacity exceeds the calculated requirement by more than 20%.",
-      value: value.oversizingPercent,
-    });
-  }
-
-  // Inform when panel count is calculated from an optional panel rating.
-  if (
-    input.panelPowerW !== undefined &&
-    value.requiredPanelCount !== undefined
-  ) {
-    const exactPanelCount =
-      value.requiredPVPowerW / input.panelPowerW;
-
-    if (value.requiredPanelCount > exactPanelCount) {
-      warnings.push({
-        code: "PANEL_COUNT_ROUNDING",
-        field: "panelPowerW",
-        message:
-          "Panel count was rounded up to the next whole panel, resulting in additional installed PV capacity.",
-        value: value.requiredPanelCount,
-      });
-    }
+    addWarning(
+      PV_SIZING_WARNING_CODES.LOW_PEAK_SUN_HOURS,
+      `Peak sun hours are below ${PV_SIZING_CONSTANTS.lowPeakSunHours} hours. The calculated PV capacity may be relatively large.`,
+      "peakSunHours",
+      input.peakSunHours,
+    );
   }
 
   return warnings;

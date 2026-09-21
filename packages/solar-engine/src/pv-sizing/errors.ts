@@ -1,47 +1,23 @@
-import type { EngineeringMessage } from "./types";
+/**
+ * PV sizing validation error codes.
+ *
+ * These codes identify deterministic validation failures
+ * specific to PV energy and power sizing inputs.
+ */
 
-export const createPVSizingError = (
-  code: string,
-  field: string,
-  message: string,
-  value?: unknown,
-): EngineeringMessage => ({
-  code,
-  field,
-  message,
-  ...(value !== undefined ? { value } : {}),
-});
+export const PV_SIZING_ERROR_CODES = {
+  INVALID_DAILY_ENERGY:
+    "PV_SIZING_INVALID_DAILY_ENERGY",
 
-export const pvSizingErrors = {
-  invalidDailyEnergy: (value: unknown): EngineeringMessage =>
-    createPVSizingError(
-      "PV_SIZING_INVALID_DAILY_ENERGY",
-      "dailyEnergyKWh",
-      "dailyEnergyKWh must be a finite number greater than 0.",
-      value,
-    ),
+  INVALID_PEAK_SUN_HOURS:
+    "PV_SIZING_INVALID_PEAK_SUN_HOURS",
 
-  invalidPeakSunHours: (value: unknown): EngineeringMessage =>
-    createPVSizingError(
-      "PV_SIZING_INVALID_PEAK_SUN_HOURS",
-      "peakSunHours",
-      "peakSunHours must be a finite number greater than 0.",
-      value,
-    ),
+  INVALID_SYSTEM_EFFICIENCY:
+    "PV_SIZING_INVALID_SYSTEM_EFFICIENCY",
 
-  invalidSystemEfficiency: (value: unknown): EngineeringMessage =>
-    createPVSizingError(
-      "PV_SIZING_INVALID_SYSTEM_EFFICIENCY",
-      "systemEfficiency",
-      "systemEfficiency must be a finite number greater than 0 and less than or equal to 1.",
-      value,
-    ),
+  INVALID_PANEL_POWER:
+    "PV_SIZING_INVALID_PANEL_POWER",
+} as const;
 
-  invalidPanelPower: (value: unknown): EngineeringMessage =>
-    createPVSizingError(
-      "PV_SIZING_INVALID_PANEL_POWER",
-      "panelPowerW",
-      "panelPowerW must be a finite number greater than 0 when provided.",
-      value,
-    ),
-};
+export type PVSizingErrorCode =
+  (typeof PV_SIZING_ERROR_CODES)[keyof typeof PV_SIZING_ERROR_CODES];
