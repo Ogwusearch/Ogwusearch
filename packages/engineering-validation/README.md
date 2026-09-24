@@ -1,450 +1,420 @@
-# @ogwusearch/engineering-validation
+@ogwusearch/engineering-validation
 
-Reusable validation infrastructure for deterministic engineering calculations.
+# `@ogwusearch/engineering-validation`
 
-## Purpose
+Reusable, deterministic validation infrastructure for the **Ogwusearch Engineering** foundation.
 
-`@ogwusearch/engineering-validation` provides common validation utilities used by the OGWUSEARCH engineering engines.
-
-It is responsible for validating engineering inputs before calculations are executed.
-
-The package does **not** contain domain-specific engineering formulas.
+`engineering-validation` provides the generic validation system used by all engineering calculation engines. It validates inputs, executes reusable rules, collects structured issues, and returns deterministic validation results. It **does not** contain solar, electrical, or domain-specific validation logic.
 
 ---
 
-## Responsibilities
+## Purpose
 
-The validation package handles:
+This package owns the validation layer of the engineering foundation.
 
-* Required-field validation
-* Numeric validation
-* Positive-value validation
-* Non-negative-value validation
-* Range validation
-* Integer validation
-* Enumeration validation
-* Constraint validation
-* Cross-field validation
-* Collection of multiple validation errors
-* Structured validation results
+It is responsible for:
+
+* Validation rule contracts.
+
+* Validation rule execution.
+
+* Generic numeric and structural validation.
+
+* Error and warning collection.
+
+* Deterministic issue ordering.
+
+* Field path preservation.
+
+* Validation result construction.
+
+It is **not** responsible for:
+
+* Engineering calculations.
+
+* Unit conversions.
+
+* Solar-specific rules.
+
+* Battery sizing rules.
+
+* PV sizing rules.
+
+* Database or network validation.
+
+---
+
+## Architecture Position
+
+```
+engineering-types
+        ↑
+engineering-validation
+        ↑
+engineering-core
+        ↑
+solar-engine
+```
+
+`engineering-validation` depends only on **engineering-types**.
+
+Domain engines consume this package through `engineering-core` or directly when defining domain validation rules.
+
+---
+
+## Package Structure
+
+```
+engineering-validation/
+├── src/
+│   ├── rule/
+│   │   ├── rule.ts
+│   │   ├── rules.ts
+│   │   └── rule-context.ts
+│   │
+│   ├── validator/
+│   │   ├── validate.ts
+│   │   ├── validate-all.ts
+│   │   └── validation-result.ts
+│   │
+│   ├── checks/
+│   │   ├── required.ts
+│   │   ├── numeric.ts
+│   │   ├── positive.ts
+│   │   ├── non-negative.ts
+│   │   ├── integer.ts
+│   │   ├── minimum.ts
+│   │   ├── maximum.ts
+│   │   ├── range.ts
+│   │   └── equality.ts
+│   │
+│   ├── issues/
+│   │   ├── create-error.ts
+│   │   └── create-warning.ts
+│   │
+│   ├── helpers/
+│   │   ├── combine.ts
+│   │   └── paths.ts
+│   │
+│   └── index.ts
+│
+├── tests/
+├── README.md
+├── package.json
+└── tsconfig.json
+```
+
+---
+
+## Public API
+
+The package exposes only reusable validation infrastructure.
+
+### Rule Contracts
+
+```
+ValidationRule<T>
+ValidationRuleContext
+ValidationRules
+```
+
+### Validators
+
+```
+validate(...)
+validateAll(...)
+ValidationResult
+```
+
+### Built-in Checks
+
+* `required`
+
+* `numeric`
+
+* `positive`
+
+* `nonNegative`
+
+* `integer`
+
+* `minimum`
+
+* `maximum`
+
+* `range`
+
+* `equality`
+
+### Issue Helpers
+
+```
+createError(...)
+createWarning(...)
+```
+
+### Utilities
+
+```
+combineIssues(...)
+createPath(...)
+```
+
+---
+
+## Validation Execution Model
+
+Every validation follows the same deterministic pipeline.
+
+```
+Input
+   ↓
+Rules
+   ↓
+Execute
+   ↓
+Collect Issues
+   ↓
+Split Errors / Warnings
+   ↓
+Validation Result
+```
+
+Rules never mutate input values.
+
+Validation never performs calculations.
+
+---
+
+## Validation Result Contract
+
+Every validator returns a structured result.
+
+```
+ValidationResult<T>
+```
+
+Contains:
+
+* `valid`
+
+* `errors`
+
+* `warnings`
+
+* `issues`
+
+* `value` (optional)
+
+* metadata when appropriate.
+
+Errors invalidate the result.
+
+Warnings preserve validity.
+
+---
+
+## Built-in Checks
+
+| Check         | Purpose                            |
+| ------------- | ---------------------------------- |
+| `required`    | Reject `null` / `undefined`.       |
+| `numeric`     | Require finite numeric values.     |
+| `positive`    | Require value `> 0`.               |
+| `nonNegative` | Require value `>= 0`.              |
+| `integer`     | Require a finite integer.          |
+| `minimum`     | Inclusive minimum value.           |
+| `maximum`     | Inclusive maximum value.           |
+| `range`       | Inclusive minimum and maximum.     |
+| `equality`    | Deterministic equality validation. |
+
+These checks are generic and reusable across engineering domains.
 
 ---
 
 ## Design Principles
 
-### 1. Deterministic
+### Deterministic
 
-The same input must always produce the same validation result.
+Validation produces identical issues for identical input.
 
-```text
-Input
-  ↓
-Validation Rules
-  ↓
-Validation Result
-```
+### Non-Mutating
 
-No random behavior or hidden state should influence validation.
+Validation never changes user input.
 
----
+### Serializable
 
-### 2. Side-effect free
+Issues are plain serializable objects.
 
-Validation functions should not:
+### Explicit
 
-* Modify the input
-* Write to a database
-* Make network requests
-* Modify global state
-* Perform engineering calculations
+Validation never silently fixes values.
 
-Validation should only inspect data and return results.
+### Complete
+
+Validation collects all applicable issues rather than failing fast.
 
 ---
 
-### 3. Collect all errors
+## Issue Ordering
 
-Validation should collect applicable errors instead of stopping at the first failure.
+Issue ordering is deterministic.
 
-Example:
+Rules execute in supplied order.
 
-```text
-Input:
+Collected issues preserve execution order.
 
-dailyEnergy = -500
-peakSunHours = 0
-systemEfficiency = 1.5
-```
-
-Expected result:
-
-```text
-Errors:
-- dailyEnergy must be greater than 0
-- peakSunHours must be greater than 0
-- systemEfficiency must be between 0 and 1
-```
-
-This makes engineering modules easier to debug and improves user feedback.
+This guarantees stable test snapshots and reproducible engineering reports.
 
 ---
 
-## Validation Flow
+## Field Paths
 
-```text
-Engineering Input
-       │
-       ▼
-┌──────────────────┐
-│ Required Fields  │
-└────────┬─────────┘
-         ▼
-┌──────────────────┐
-│ Type Validation  │
-└────────┬─────────┘
-         ▼
-┌──────────────────┐
-│ Range Validation │
-└────────┬─────────┘
-         ▼
-┌──────────────────┐
-│ Rule Validation  │
-└────────┬─────────┘
-         ▼
-┌──────────────────┐
-│ Collect Errors   │
-└────────┬─────────┘
-         ▼
- ValidationResult
+Validation preserves field paths for nested objects.
+
+Examples:
+
 ```
+loads[0].power
+battery.capacity
+pv.modules[2].voltage
+```
+
+Paths allow applications and reports to identify failing inputs.
 
 ---
 
-## Example Rules
+## Dependency Rules
 
-### Required value
+### Allowed Imports
 
-```ts
-required("dailyEnergy", input.dailyEnergy);
+```
+engineering-types
 ```
 
-### Positive value
+### Forbidden Imports
 
-```ts
-positive("panelPower", input.panelPower);
-```
+* engineering-core
 
-### Non-negative value
+* engineering-units
 
-```ts
-nonNegative("cableLength", input.cableLength);
-```
+* solar-engine
 
-### Range
+* electrical-engine
 
-```ts
-range(
-  "systemEfficiency",
-  input.systemEfficiency,
-  0,
-  1,
-);
-```
+* circuit-engine
 
-### Integer
+* React
 
-```ts
-integer("panelCount", input.panelCount);
-```
+* Database libraries
 
-### Enumeration
+* HTTP libraries
 
-```ts
-oneOf(
-  "systemVoltage",
-  input.systemVoltage,
-  [12, 24, 36, 48],
-);
-```
+* MCP libraries
+
+* AI SDKs
 
 ---
 
-## Validation Result
+## Testing Strategy
 
-A validation operation should return a structured result.
+Every validation feature must include tests for:
 
-Conceptually:
+### Contract Tests
 
-```ts
-type ValidationResult = {
-  valid: boolean;
-  errors: ValidationError[];
-};
+* Rule contracts.
+
+* Validation result shape.
+
+### Normal Tests
+
+* Valid input passes.
+
+### Boundary Tests
+
+* Zero.
+
+* Minimum.
+
+* Maximum.
+
+### Failure Tests
+
+* Missing values.
+
+* NaN.
+
+* Infinity.
+
+* Invalid ranges.
+
+* Multiple simultaneous failures.
+
+### Determinism Tests
+
+* Same input.
+
+* Same issue ordering.
+
+* Same output.
+
+---
+
+## Development Workflow
+
+Run package checks during development.
+
+```
+pnpm tsc --noEmit
+pnpm vitest run
+pnpm lint
+pnpm build
 ```
 
-Example:
+Run workspace validation before merging changes.
 
-```ts
-{
-  valid: false,
-  errors: [
-    {
-      field: "dailyEnergy",
-      code: "POSITIVE_REQUIRED",
-      message: "dailyEnergy must be greater than 0"
-    }
-  ]
-}
+```
+pnpm -r tsc --noEmit
+pnpm -r vitest run
+pnpm -r build
 ```
 
 ---
 
-## Validation Error
+## Coding Rules
 
-A validation error should contain enough information for both developers and applications to identify the problem.
+* Use pure functions.
 
-Conceptually:
+* Never mutate issue arrays.
 
-```ts
-type ValidationError = {
-  field?: string;
-  code: string;
-  message: string;
-  value?: unknown;
-};
-```
+* Preserve deterministic ordering.
 
-Recommended error codes include:
+* Preserve field paths.
 
-```text
-REQUIRED
-INVALID_TYPE
-NOT_NUMBER
-NOT_INTEGER
-NOT_POSITIVE
-NEGATIVE_VALUE
-OUT_OF_RANGE
-INVALID_OPTION
-INVALID_CONSTRAINT
-```
+* Keep issue metadata serializable.
+
+* Do not introduce engineering-domain logic.
+
+* Export only intentional public APIs through `src/index.ts`.
 
 ---
 
-## Cross-Field Validation
+## Current Phase
 
-Some engineering rules depend on more than one value.
+**Foundation Phase 03 — Engineering Validation**
 
-Example:
+This package implements the reusable validation infrastructure required by `engineering-core` and future engineering engines.
 
-```text
-minimumVoltage < maximumVoltage
-```
+Completion criteria for this phase include:
 
-or:
+* Generic validation rules implemented.
 
-```text
-minimumSOC <= maximumSOC
-```
+* Multiple-rule execution supported.
 
-or:
+* Error and warning separation implemented.
 
-```text
-seriesCount >= 1
-parallelCount >= 1
-```
+* Field paths preserved.
 
-These rules should be represented explicitly rather than hidden inside calculation formulas.
+* Deterministic validation results.
 
----
-
-## Engineering Example
-
-For a PV sizing module:
-
-```text
-Input
-├── dailyEnergy
-├── peakSunHours
-├── systemEfficiency
-└── panelPower
-```
-
-Validation:
-
-```text
-dailyEnergy > 0
-peakSunHours > 0
-0 < systemEfficiency <= 1
-panelPower > 0
-```
-
-Only after validation succeeds should the calculation engine perform the PV sizing calculation.
-
----
-
-## Relationship With Other Packages
-
-```text
-@ogwusearch/engineering-types
-              │
-              ▼
-@ogwusearch/engineering-validation
-              │
-              ▼
-@ogwusearch/engineering-core
-              │
-              ▼
-       Domain Engines
-```
-
-Domain engines include:
-
-```text
-@ogwusearch/solar-engine
-@ogwusearch/electrical-engine
-@ogwusearch/circuit-engine
-```
-
-The validation package may depend on shared engineering types.
-
-It must **not** depend on domain engines.
-
----
-
-## What Does Not Belong Here
-
-Do not put engineering formulas in this package.
-
-For example, this does **not** belong here:
-
-```ts
-const pvPower =
-  dailyEnergy / (peakSunHours * efficiency);
-```
-
-That belongs in the appropriate domain engine.
-
-Similarly:
-
-```ts
-const current = power / voltage;
-```
-
-belongs in an electrical calculation module.
-
-Validation only determines whether the inputs satisfy the required conditions.
-
----
-
-## Recommended Package Structure
-
-```text
-engineering-validation/
-│
-├── src/
-│   ├── index.ts
-│   │
-│   ├── errors/
-│   │   ├── codes.ts
-│   │   └── validation-error.ts
-│   │
-│   ├── rules/
-│   │   ├── required.ts
-│   │   ├── numeric.ts
-│   │   ├── positive.ts
-│   │   ├── non-negative.ts
-│   │   ├── range.ts
-│   │   ├── integer.ts
-│   │   └── one-of.ts
-│   │
-│   ├── validation/
-│   │   ├── validate.ts
-│   │   └── validation-result.ts
-│   │
-│   └── __tests__/
-│       ├── required.test.ts
-│       ├── numeric.test.ts
-│       ├── range.test.ts
-│       └── validation.test.ts
-│
-└── README.md
-```
-
----
-
-## Testing Requirements
-
-Every validation rule should have tests covering:
-
-### Valid input
-
-```text
-Expected:
-valid === true
-errors.length === 0
-```
-
-### Invalid input
-
-```text
-Expected:
-valid === false
-errors.length > 0
-```
-
-### Boundary values
-
-Test:
-
-```text
-minimum
-maximum
-just below minimum
-just above maximum
-zero
-negative values
-```
-
-### Multiple errors
-
-Ensure validation does not stop after the first error.
-
----
-
-## Quality Requirements
-
-The package should maintain:
-
-* Strong TypeScript typing
-* Deterministic behavior
-* No hidden state
-* No side effects
-* Clear error codes
-* Clear error messages
-* Complete test coverage
-* No domain-specific formulas
-* No circular dependencies
-
----
-
-## Summary
-
-`@ogwusearch/engineering-validation` is the reusable validation layer of the engineering ecosystem.
-
-Its job is simple:
-
-```text
-Receive engineering input
-        ↓
-Apply validation rules
-        ↓
-Collect all validation errors
-        ↓
-Return structured validation result
-        ↓
-Allow valid input to reach the calculation engine
-```
-
-The package provides the validation infrastructure.
-
-The domain engines provide the engineering mathematics.
+* Tests, typecheck, lint, and build passing.

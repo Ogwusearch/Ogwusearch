@@ -21,8 +21,8 @@
     "src/**/*.ts"
   ],
   "exclude": [
-    "node_modules",
     "dist",
-    "coverage"
+    "node_modules",
+    "tests"
   ]
 }

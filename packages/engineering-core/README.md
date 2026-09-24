@@ -1,767 +1,581 @@
 # @ogwusearch/engineering-core
 
-Execution foundation for deterministic engineering calculations.
+Core engineering calculation infrastructure for the Ogwusearch engineering platform.
 
-## Purpose
+`engineering-core` sits between the reusable engineering foundation packages and domain-specific engineering systems such as `solar-engine`.
 
-`@ogwusearch/engineering-core` provides the execution and orchestration layer for the OGWUSEARCH engineering ecosystem.
-
-It connects:
-
-* Engineering types
-* Validation
-* Engineering modules
-* Calculation execution
-* Results
-* Warnings
-* Errors
-* Assumptions
-* Metadata
-* Calculation traces
-
-The core package provides the **execution framework**.
-
-It does not contain domain-specific engineering formulas.
-
----
-
-## Calculation Flow
-
-Every engineering calculation follows a consistent execution pipeline:
+## Position in the Monorepo
 
 ```text
-Input
-  ↓
-Validation
-  ↓
-Calculation
-  ↓
-Warnings
-  ↓
-Result
-  ↓
-Trace
+engineering-types
+       ↑
+engineering-units
+       ↑
+engineering-validation
+       ↑
+engineering-core
+       ↑
+solar-engine
 ```
 
-More explicitly:
+The package is responsible for common engineering calculation behavior, execution context, result handling, validation integration, assumptions, and calculation tracing.
 
-```text
-                    Engineering Input
-                           │
-                           ▼
-                    ┌──────────────┐
-                    │  Validation  │
-                    └──────┬───────┘
-                           │
-                ┌──────────┴──────────┐
-                │                     │
-             Invalid                 Valid
-                │                     │
-                ▼                     ▼
-             Errors              Calculation
-                                      │
-                         ┌────────────┼────────────┐
-                         │            │            │
-                         ▼            ▼            ▼
-                      Result       Warnings      Trace
-                         │            │            │
-                         └────────────┴────────────┘
-                                      │
-                                      ▼
-                           EngineeringResult
-```
-
----
+It should remain domain-agnostic.
 
 ## Responsibilities
 
-`engineering-core` is responsible for:
+`engineering-core` provides the common execution layer for engineering calculations.
 
-* Engineering module execution
-* Calculation orchestration
-* Validation orchestration
-* Result construction
-* Error propagation
-* Warning collection
-* Assumption collection
-* Metadata handling
-* Calculation trace handling
-* Consistent execution behavior
+Typical responsibilities include:
 
----
+* calculation execution
+* calculation inputs and outputs
+* validation before calculation
+* calculation status
+* assumptions
+* calculation traces
+* deterministic results
+* calculation metadata
+* error handling
+* reusable calculation helpers
 
-## Engineering Module
+Domain-specific formulas should live in higher-level packages.
 
-An engineering module represents one deterministic engineering calculation.
-
-Conceptually:
-
-```ts
-interface EngineeringModule<I, V, O> {
-  validate(input: I): ValidationResult;
-  calculate(input: V): O;
-}
-```
-
-Where:
+For example:
 
 ```text
-I = raw input
-V = validated input
-O = calculation output
+engineering-core
+    ↓
+solar-engine
+    ├── load calculations
+    ├── energy calculations
+    ├── PV sizing
+    ├── battery sizing
+    ├── inverter sizing
+    ├── cable sizing
+    └── voltage drop
 ```
 
-Example:
+## Design Goals
+
+### Deterministic
+
+The same valid inputs should produce the same result.
 
 ```text
-PV Sizing Module
-
-Input
-  ↓
-PVSizingInput
-  ↓
-Validation
-  ↓
-ValidatedPVSizingInput
-  ↓
-Calculation
-  ↓
-PVSizingResult
+inputs + configuration
+        ↓
+    calculation
+        ↓
+     result
 ```
 
----
+### Traceable
 
-## Calculation Runner
+Calculations should be explainable.
 
-The calculation runner is the main execution mechanism.
-
-Conceptually:
-
-```ts
-runEngineeringModule(
-  input,
-  module,
-  metadata,
-);
-```
-
-The runner is responsible for:
-
-1. Receiving input
-2. Running validation
-3. Collecting validation errors
-4. Stopping invalid calculations
-5. Executing valid calculations
-6. Collecting warnings
-7. Creating the engineering result
-8. Attaching metadata
-9. Attaching assumptions
-10. Attaching calculation trace
-
-The runner should not contain domain-specific engineering formulas.
-
----
-
-## Validation
-
-Validation occurs before calculation.
+A calculation may record:
 
 ```text
 Input
   ↓
 Validation
   ↓
-Valid?
+Assumptions
+  ↓
+Calculation Steps
+  ↓
+Intermediate Values
+  ↓
+Final Result
 ```
 
-If validation fails:
+### Validated
 
-```text
-Input
-  ↓
-Validation
-  ↓
-Errors
-  ↓
-EngineeringResult
-```
+Invalid engineering inputs should be detected before calculations are executed.
 
-The calculation itself must not execute with invalid input.
-
-Validation logic belongs primarily to:
+`engineering-core` integrates with:
 
 ```text
 @ogwusearch/engineering-validation
 ```
 
-The core package orchestrates validation but does not replace the validation package.
+### Unit-aware
 
----
+Physical quantities should use:
 
-## Error Handling
+```text
+@ogwusearch/engineering-units
+```
 
-Engineering errors should be structured.
+instead of passing undocumented raw numbers where practical.
+
+### Domain-independent
+
+Do not place solar-specific, mining-specific, electrical-installation-specific, or other domain formulas directly in this package.
+
+For example, this belongs in `solar-engine`:
+
+```ts
+calculatePvArraySize(...)
+```
+
+while generic execution behavior belongs here:
+
+```ts
+executeCalculation(...)
+```
+
+## Expected Package Structure
+
+```text
+engineering-core/
+├── src/
+│   ├── calculation/
+│   │   ├── calculate.ts
+│   │   ├── execute.ts
+│   │   └── result.ts
+│   │
+│   ├── context/
+│   │   └── calculation-context.ts
+│   │
+│   ├── errors/
+│   │   └── calculation-error.ts
+│   │
+│   ├── assumptions/
+│   │   └── assumptions.ts
+│   │
+│   ├── trace/
+│   │   ├── add-step.ts
+│   │   └── create-trace.ts
+│   │
+│   ├── helpers/
+│   │   └── result-helpers.ts
+│   │
+│   └── index.ts
+│
+├── tests/
+├── package.json
+├── tsconfig.json
+└── README.md
+```
+
+## Core Calculation Flow
+
+A calculation should follow a predictable pipeline:
+
+```text
+Calculation Request
+        │
+        ▼
+     Normalize
+        │
+        ▼
+     Validate
+        │
+        ▼
+     Assumptions
+        │
+        ▼
+     Calculate
+        │
+        ▼
+   Intermediate Steps
+        │
+        ▼
+    Final Result
+        │
+        ▼
+   Calculation Output
+```
+
+Conceptually:
+
+```ts
+const result = executeCalculation({
+  input,
+  rules,
+  calculate,
+  context,
+});
+```
+
+The execution layer should handle common concerns while the supplied calculation function performs the domain calculation.
+
+## Calculation Context
+
+A calculation context can carry information required for reproducibility and traceability.
 
 Example:
 
 ```ts
+interface CalculationContext {
+  readonly calculationId?: string;
+  readonly projectId?: string;
+  readonly auditId?: string;
+  readonly module?: string;
+  readonly version?: string;
+}
+```
+
+Context should describe the calculation environment rather than contain domain-specific business logic.
+
+## Validation
+
+Validation is performed using:
+
+```text
+@ogwusearch/engineering-validation
+```
+
+Typical flow:
+
+```ts
+const issues = validate(input, rules, context);
+
+if (issues.length > 0) {
+  // calculation should not continue
+}
+```
+
+This keeps validation rules separate from calculation formulas.
+
+## Units
+
+Physical values should use:
+
+```text
+@ogwusearch/engineering-units
+```
+
+Examples include:
+
+```text
+Voltage
+Current
+Power
+Energy
+Resistance
+Charge
+Time
+Length
+Temperature
+Percentage
+```
+
+The core package should not duplicate unit conversion logic.
+
+## Results
+
+Calculation results should preserve enough information to understand what happened.
+
+A result may contain:
+
+```text
+status
+value
+unit
+issues
+assumptions
+trace
+metadata
+```
+
+Example conceptual result:
+
+```ts
 {
-  ok: false,
-  errors: [
-    {
-      code: "INVALID_INPUT",
-      field: "systemVoltage",
-      message: "systemVoltage must be one of 12, 24, 36, or 48"
-    }
-  ],
-  warnings: [],
+  status: "success",
+  value: 5.2,
+  unit: kW,
+  issues: [],
+  assumptions: [...],
+  trace: [...],
   metadata: {
-    engine: "solar-engine",
-    module: "battery-sizing",
-    version: "1.0.0"
+    module: "solar-sizing"
   }
 }
 ```
 
-The runner should preserve the original error information.
+## Calculation Status
 
-It should not silently discard validation failures.
-
----
-
-## Warnings
-
-Warnings represent conditions that do not necessarily prevent calculation.
-
-Example:
+Typical calculation states include:
 
 ```text
-Input
-  ↓
-Validation
-  ↓
-Valid
-  ↓
-Calculation
-  ↓
-Warning
-  ↓
-Result
+PENDING
+VALIDATING
+CALCULATING
+SUCCESS
+WARNING
+ERROR
 ```
 
-Example warning:
-
-```ts
-{
-  code: "HIGH_VOLTAGE_DROP",
-  message: "Calculated voltage drop exceeds the recommended limit"
-}
-```
-
-Warnings should remain separate from errors.
-
-```text
-Error
-→ Calculation cannot produce a valid result
-
-Warning
-→ Calculation completed, but attention is required
-```
-
----
+The exact status model should remain centralized in the engineering foundation types.
 
 ## Assumptions
 
-Engineering calculations often require assumptions.
+Engineering calculations frequently depend on assumptions.
 
-The core execution layer should provide a consistent mechanism for recording them.
-
-Example:
-
-```ts
-{
-  name: "systemEfficiency",
-  value: 0.75,
-  reason: "Default system efficiency",
-  source: "solar-engine"
-}
-```
-
-Assumptions should be visible in the final engineering result.
-
-This improves:
-
-* Auditability
-* Reproducibility
-* Engineering review
-* Report generation
-
----
-
-## Metadata
-
-Every engineering result should identify the calculation that produced it.
-
-Example:
-
-```ts
-{
-  engine: "solar-engine",
-  module: "pv-sizing",
-  version: "1.0.0"
-}
-```
-
-Metadata may also include:
+Examples:
 
 ```text
-Engine
-Module
-Version
-Timestamp
-Calculation ID
+System efficiency = 0.85
+Power factor = 0.90
+Design margin = 1.20
+Peak sun hours = 5.0
 ```
 
-Metadata allows results to be traced back to their originating calculation module.
+Assumptions should be recorded explicitly rather than hidden inside formulas.
 
----
+This allows reports and audits to explain how a result was produced.
 
-## Calculation Trace
+## Traceability
 
-The core package supports calculation traceability.
-
-Conceptually:
-
-```text
-Calculation
-    │
-    ├── Step 1
-    ├── Step 2
-    ├── Step 3
-    └── Step 4
-```
+A calculation trace should expose meaningful engineering steps.
 
 Example:
 
 ```text
 Step 1
-dailyEnergy = 12 kWh/day
+Daily Energy = 12.4 kWh/day
 
 Step 2
-peakSunHours = 5 h/day
+Adjusted Energy = 12.4 / 0.85
+                = 14.59 kWh/day
 
 Step 3
-systemEfficiency = 0.75
+PV Capacity = 14.59 / 5.0
+            = 2.92 kW
 
 Step 4
-requiredPV =
-12 / (5 × 0.75)
-
-Step 5
-requiredPV = 3.2 kW
+Design Capacity = 2.92 × 1.20
+                = 3.50 kW
 ```
 
-The trace makes engineering results easier to inspect and audit.
+The trace should be suitable for:
 
-The domain engine defines the engineering steps.
+* debugging
+* engineering review
+* audit reports
+* client reports
+* calculation verification
 
-The core package provides the execution infrastructure for carrying the trace.
+## Error Handling
 
----
+Errors should be explicit and meaningful.
 
-## Result Construction
-
-The core package should produce a consistent result shape.
-
-Conceptually:
-
-```ts
-type EngineeringResult<T> = {
-  ok: boolean;
-  value?: T;
-  errors: EngineeringError[];
-  warnings: EngineeringWarning[];
-  assumptions?: EngineeringAssumption[];
-  metadata: EngineeringMetadata;
-  trace?: CalculationTrace;
-};
-```
-
-Successful calculation:
-
-```ts
-{
-  ok: true,
-  value: result,
-  errors: [],
-  warnings: [],
-  assumptions: [],
-  metadata,
-  trace
-}
-```
-
-Failed calculation:
-
-```ts
-{
-  ok: false,
-  errors,
-  warnings: [],
-  metadata
-}
-```
-
----
-
-## Dependency Direction
-
-The core package sits above the shared contracts and validation infrastructure.
+Examples:
 
 ```text
-              engineering-types
-                 ↑      ↑
-                 │      │
-                 │      └────────────┐
-                 │                   │
-        engineering-units    engineering-validation
-                                      │
-                                      ▼
-                              engineering-core
-                                      │
-                     ┌────────────────┼────────────────┐
-                     ▼                ▼                ▼
-               solar-engine   electrical-engine   circuit-engine
+INVALID_INPUT
+VALIDATION_FAILED
+CALCULATION_FAILED
+INCOMPATIBLE_UNITS
+INVALID_ASSUMPTION
+INVALID_CALCULATION_CONTEXT
 ```
 
-The important architectural rule is:
+Avoid silent failures.
 
-> Foundation packages must never depend on domain engines.
+Avoid returning `NaN` or `Infinity` as a normal engineering result.
 
-Therefore:
+## Dependency Rules
+
+`engineering-core` may depend on foundation packages:
 
 ```text
-engineering-core → solar-engine
+@ogwusearch/engineering-types
+@ogwusearch/engineering-units
+@ogwusearch/engineering-validation
 ```
 
-is forbidden.
-
-Instead:
-
-```text
-solar-engine → engineering-core
-```
-
-is correct.
-
----
-
-## Separation of Responsibilities
-
-### `engineering-types`
-
-Defines shared contracts.
-
-```text
-"What shape does the data have?"
-```
-
-### `engineering-units`
-
-Defines quantities, dimensions, and conversions.
-
-```text
-"What unit does this value represent?"
-```
-
-### `engineering-validation`
-
-Validates engineering inputs.
-
-```text
-"Is this input valid?"
-```
-
-### `engineering-core`
-
-Executes engineering modules.
-
-```text
-"How should this calculation execute?"
-```
-
-### Domain engines
-
-Perform engineering mathematics.
-
-```text
-"What is the engineering result?"
-```
-
----
-
-## Example: Solar Calculation
-
-A solar calculation should look conceptually like:
+It must not depend on:
 
 ```text
 solar-engine
-     │
-     ▼
-PV Sizing Module
-     │
-     ▼
+```
+
+or other domain-specific engineering packages.
+
+This preserves the dependency direction of the monorepo.
+
+## Domain Boundary
+
+### Belongs in `engineering-core`
+
+```text
+calculation execution
+validation integration
+result handling
+calculation context
+assumptions
+trace handling
+calculation errors
+generic calculation helpers
+```
+
+### Does not belong in `engineering-core`
+
+```text
+PV formulas
+battery formulas
+inverter sizing formulas
+solar irradiation models
+electrical cable formulas
+mining production formulas
+inventory logic
+business rules
+UI components
+database repositories
+```
+
+Those belong in domain packages.
+
+## Example Architecture
+
+```text
+packages/
+│
+├── engineering-types/
+│
+├── engineering-units/
+│
+├── engineering-validation/
+│
+├── engineering-core/
+│
+└── solar-engine/
+    ├── load/
+    ├── energy/
+    ├── pv/
+    ├── battery/
+    ├── inverter/
+    ├── cable/
+    ├── voltage-drop/
+    └── protection/
+```
+
+A solar calculation can therefore look conceptually like:
+
+```text
+solar-engine
+      │
+      ├── input
+      │
+      ▼
 engineering-core
-     │
-     ├── validate
-     │
-     ├── calculate
-     │
-     ├── warnings
-     │
-     ├── assumptions
-     │
-     ├── metadata
-     │
-     └── trace
-     │
-     ▼
-EngineeringResult
+      │
+      ├── validation
+      ├── assumptions
+      ├── execution
+      ├── trace
+      └── result
+      │
+      ▼
+engineering-types
+engineering-units
+engineering-validation
 ```
 
-The solar formula remains inside:
-
-```text
-@ogwusearch/solar-engine
-```
-
-The execution framework remains inside:
-
-```text
-@ogwusearch/engineering-core
-```
-
----
-
-## Example: Generic Module
+## Example Usage
 
 ```ts
-const module: EngineeringModule<
-  Input,
-  ValidatedInput,
-  Output
-> = {
-  validate(input) {
-    return validateInput(input);
-  },
+import {
+  executeCalculation,
+} from "@ogwusearch/engineering-core";
 
-  calculate(input) {
-    return calculateEngineeringResult(input);
-  },
-};
-```
-
-Execution:
-
-```ts
-const result = runEngineeringModule(
+const result = executeCalculation({
   input,
-  module,
-  metadata,
-);
+  calculate: (input) => {
+    return calculateSomething(input);
+  },
+});
 ```
 
-The runner provides consistent execution regardless of the engineering domain.
-
----
-
-## Determinism
-
-Engineering calculations must be deterministic.
-
-Given:
-
-```text
-Same input
-+
-Same module version
-+
-Same assumptions
-+
-Same constants
-```
-
-the calculation should produce the same result.
-
-The core execution layer should avoid:
-
-* Random values
-* Hidden mutable state
-* Uncontrolled external dependencies
-* Non-deterministic execution
-
----
-
-## Side Effects
-
-The calculation core should remain as close to pure execution as possible.
-
-It should not directly:
-
-* Access databases
-* Make HTTP requests
-* Modify application state
-* Write files
-* Depend on UI frameworks
-
-Persistence and application integration belong outside the engineering core.
-
----
+The exact public API should remain small and stable.
 
 ## Testing
 
-The core package should test:
-
-### Successful execution
+The package should test:
 
 ```text
-Valid input
-  ↓
-Validation passes
-  ↓
-Calculation executes
-  ↓
-Result returned
+calculation execution
+validation failures
+successful calculations
+warning results
+calculation errors
+trace generation
+assumption handling
+context propagation
+result creation
 ```
 
-### Validation failure
+Run:
+
+```bash
+pnpm --filter @ogwusearch/engineering-core typecheck
+pnpm --filter @ogwusearch/engineering-core build
+pnpm --filter @ogwusearch/engineering-core test
+```
+
+## Build
+
+```bash
+pnpm --filter @ogwusearch/engineering-core build
+```
+
+## Typecheck
+
+```bash
+pnpm --filter @ogwusearch/engineering-core typecheck
+```
+
+## Tests
+
+```bash
+pnpm --filter @ogwusearch/engineering-core test
+```
+
+## Architectural Principle
+
+The core principle is:
 
 ```text
-Invalid input
-  ↓
-Validation fails
-  ↓
-Calculation does not execute
-  ↓
-Errors returned
+Foundation packages define
+HOW engineering data is represented and validated.
+
+engineering-core defines
+HOW engineering calculations are executed and traced.
+
+Domain engines define
+WHAT engineering problem is being solved.
 ```
 
-### Warning propagation
+This separation allows the same calculation infrastructure to be reused across:
 
 ```text
-Valid input
-  ↓
-Calculation
-  ↓
-Warning
-  ↓
-Result contains warning
+Solar
+Electrical
+Mechanical
+Mining
+Energy
+Civil
+Industrial
 ```
 
-### Metadata propagation
+without coupling the foundation to a particular engineering domain.
 
-Verify that calculation metadata is preserved.
+## Package Scope
 
-### Trace propagation
+`@ogwusearch/engineering-core` should remain:
 
-Verify that calculation traces are preserved.
+* reusable
+* deterministic
+* strongly typed
+* unit-aware
+* validation-aware
+* traceable
+* domain-independent
+* suitable for offline execution
 
-### Generic typing
-
-Verify that:
-
-```ts
-EngineeringResult<T>
-```
-
-correctly retains the calculation output type.
-
----
-
-## Recommended Package Structure
-
-```text
-engineering-core/
-│
-├── src/
-│   ├── index.ts
-│   │
-│   ├── runner/
-│   │   ├── run-engineering-module.ts
-│   │   └── runner-types.ts
-│   │
-│   ├── result/
-│   │   └── result-builder.ts
-│   │
-│   ├── warnings/
-│   │   └── warning-collector.ts
-│   │
-│   ├── assumptions/
-│   │   └── assumption-collector.ts
-│   │
-│   ├── trace/
-│   │   └── trace-builder.ts
-│   │
-│   └── __tests__/
-│       ├── runner.test.ts
-│       ├── result.test.ts
-│       ├── warnings.test.ts
-│       └── trace.test.ts
-│
-└── README.md
-```
-
----
-
-## Quality Requirements
-
-`@ogwusearch/engineering-core` should maintain:
-
-* Strong TypeScript typing
-* Deterministic execution
-* Consistent result construction
-* Structured errors
-* Structured warnings
-* Explicit assumptions
-* Calculation metadata
-* Calculation traceability
-* No domain-specific formulas
-* No UI dependencies
-* No database dependencies
-* No circular dependencies
-
----
-
-## Summary
-
-`@ogwusearch/engineering-core` is the execution foundation of the OGWUSEARCH engineering ecosystem.
-
-Its responsibility is to provide a consistent calculation lifecycle:
-
-```text
-Input
-  ↓
-Validation
-  ↓
-Calculation
-  ↓
-Warnings
-  ↓
-Assumptions
-  ↓
-Metadata
-  ↓
-Trace
-  ↓
-EngineeringResult
-```
-
-The package provides the execution framework.
-
-The shared types package defines the contracts.
-
-The validation package validates inputs.
-
-The units package manages quantities and conversions.
-
-The domain engines contain the actual engineering mathematics.
+It is the execution foundation for the Ogwusearch engineering platform.

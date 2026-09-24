@@ -15,14 +15,17 @@
     "tsBuildInfoFile": "./dist/tsconfig.tsbuildinfo",
     "noEmitOnError": true,
     "skipLibCheck": true,
-    "forceConsistentCasingInFileNames": true
+    "forceConsistentCasingInFileNames": true,
+    "types": [
+      "node"
+    ]
   },
   "include": [
     "src/**/*.ts"
   ],
-  "references": [
-    {
-      "path": "../engineering-types"
-    }
+  "exclude": [
+    "dist",
+    "node_modules",
+    "tests"
   ]
 }
