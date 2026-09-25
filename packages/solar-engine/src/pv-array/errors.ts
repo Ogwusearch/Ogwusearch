@@ -1,10 +1,3 @@
-/**
- * PV Array validation error codes.
- *
- * These codes identify deterministic validation failures specific
- * to PV array configuration and electrical limits.
- */
-
 export const PV_ARRAY_ERROR_CODES = {
   INVALID_MODULE_POWER:
     "PV_ARRAY_INVALID_MODULE_POWER",

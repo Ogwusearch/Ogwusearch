@@ -1,7 +1,10 @@
 import type { ValidationResult } from "@ogwusearch/engineering-validation";
 
-import { PV_SIZING_CONSTANTS } from "./constants";
-import type { PVSizingInput, PVSizingValue } from "./types";
+import { PV_SIZING_CONSTANTS } from "./constants.js";
+import type {
+  PVSizingInput,
+  PVSizingValue,
+} from "./types/index.js";
 
 /**
  * PV sizing validation warning codes.
@@ -34,10 +37,18 @@ export function generatePVSizingWarnings(
   ): void => {
     warnings.push({
       code,
-      field,
+      path: field,
       message,
-      ...(value !== undefined ? { value } : {}),
-      severity: "warning",
+      ...(value !== undefined
+        ? {
+            metadata: {
+              extras: {
+                value,
+              },
+            },
+          }
+        : {}),
+      severity: "WARNING",
     });
   };
 

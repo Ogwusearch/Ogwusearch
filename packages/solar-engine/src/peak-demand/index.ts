@@ -1,68 +1,30 @@
-import {
-  calculatePeakDemand as calculate,
-  createCalculationTrace,
-} from "./calculations";
+export {
+  runPeakDemand,
+} from "./run.js";
 
-import { validatePeakDemandInput } from "./validation";
-import { generateWarnings } from "./warnings";
+export {
+  calculateContinuousDemand,
+  calculateStartingDemand,
+  calculateDesignDemand,
+  calculatePeakDemand,
+} from "./calculation/index.js";
 
-import type {
-  PeakDemandInput,
-  PeakDemandResult,
-} from "./types";
+export {
+  validatePeakDemandInput,
+  isPeakDemandInput,
+} from "./validation/index.js";
 
-export const PEAK_DEMAND_ENGINE_VERSION = "0.1.0";
+export {
+  createPeakDemandAssumptions,
+} from "./assumptions/index.js";
 
-export const PEAK_DEMAND_ENGINE_METADATA = {
-  engine: "peak-demand" as const,
-  version: PEAK_DEMAND_ENGINE_VERSION,
-  unitSystem: "SI" as const,
-};
-
-export function validatePeakDemand(
-  input: unknown,
-) {
-  return validatePeakDemandInput(input);
-}
-
-export function calculatePeakDemand(
-  input: PeakDemandInput,
-): PeakDemandResult {
-  const validation = validatePeakDemandInput(input);
-
-  if (!validation.valid) {
-    return {
-      success: false,
-      errors: validation.errors,
-      warnings: validation.warnings,
-      metadata: PEAK_DEMAND_ENGINE_METADATA,
-    };
-  }
-
-  const value = calculate(input);
-
-  const warnings = generateWarnings(input, value);
-
-  const trace = createCalculationTrace(input, value);
-
-  return {
-    success: true,
-    value,
-    errors: [],
-    warnings,
-    trace,
-    metadata: PEAK_DEMAND_ENGINE_METADATA,
-  };
-}
+export {
+  createPeakDemandTrace,
+} from "./trace/index.js";
 
 export type {
   PeakDemandInput,
-  PeakDemandLoad,
+  PeakDemandLoadInput,
   PeakDemandLoadResult,
-  PeakDemandValue,
-  EngineeringMessage,
-  ValidationResult,
-  PeakDemandCalculationTrace,
-  PeakDemandMetadata,
-  PeakDemandResult,
-} from "./types";
+  PeakDemandOutput,
+} from "./types/index.js";

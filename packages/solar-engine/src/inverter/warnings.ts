@@ -1,5 +1,3 @@
-// /home/ogwu/workspace/ogwusearch/packages/solar-engine/src/inverter/warnings.ts
-
 import type {
   EngineeringMessage,
   InverterSizingInput,
@@ -8,7 +6,7 @@ import type {
 
 export function generateInverterSizingWarnings(
   input: InverterSizingInput,
-  value: InverterSizingValue
+  value: InverterSizingValue,
 ): EngineeringMessage[] {
   const warnings: EngineeringMessage[] = [];
 
@@ -22,7 +20,10 @@ export function generateInverterSizingWarnings(
     });
   }
 
-  if (input.powerFactor !== undefined && input.powerFactor < 0.9) {
+  if (
+    input.powerFactor !== undefined &&
+    input.powerFactor < 0.9
+  ) {
     warnings.push({
       code: "LOW_POWER_FACTOR",
       field: "powerFactor",
@@ -90,9 +91,7 @@ export function generateInverterSizingWarnings(
     });
   }
 
-  if (
-    value.inputVoltageCompatible === false
-  ) {
+  if (value.inputVoltageCompatible === false) {
     warnings.push({
       code: "INPUT_VOLTAGE_MISMATCH",
       field: "systemVoltageV",
@@ -102,9 +101,7 @@ export function generateInverterSizingWarnings(
     });
   }
 
-  if (
-    value.outputVoltageCompatible === false
-  ) {
+  if (value.outputVoltageCompatible === false) {
     warnings.push({
       code: "OUTPUT_VOLTAGE_MISMATCH",
       field: "inverterOutputVoltageV",
@@ -128,9 +125,7 @@ export function generateInverterSizingWarnings(
     });
   }
 
-  if (
-    value.systemCompatible === false
-  ) {
+  if (value.systemCompatible === false) {
     warnings.push({
       code: "INVERTER_SYSTEM_INCOMPATIBLE",
       field: "systemCompatible",

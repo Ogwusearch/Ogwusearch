@@ -31,8 +31,8 @@ describe("validatePvStringInput", () => {
     expect(result.errors).toContainEqual(
       expect.objectContaining({
         code: PV_STRING_ERROR_CODES.INVALID_MODULE_POWER,
-        field: "modulePowerW",
-        severity: "error",
+        path: "modulePowerW",
+        severity: "ERROR",
       }),
     );
   });

@@ -1,140 +1,408 @@
-import { describe, expect, it } from "vitest";
 
-import { validateLoadAudit } from "../validation";
-import type { LoadAuditInput, LoadItemInput } from "../input";
+import {
+  describe,
+  expect,
+  it,
+} from "vitest";
 
-const validLoad: LoadItemInput = {
-  appliance: "LED Lamp",
-  quantity: 1,
-  ratedPowerW: 10,
-  hoursPerDay: 5,
-};
+import {
+  validateLoad,
+  validateLoadList,
+} from "../validation/index.js";
 
-const validInput: LoadAuditInput = {
-  loads: [validLoad],
-  diversityFactor: 0.8,
-  designMargin: 0.2,
-};
+import type {
+  Load,
+} from "../types/load.js";
 
-describe("validateLoadAudit", () => {
-  it("accepts valid input", () => {
-    const result = validateLoadAudit(validInput);
+function createLoad(
+  overrides: Partial<Load> = {},
+): Load {
+  return {
+    id: "LOAD-001",
+    name: "LED Lamp",
+    category: "LIGHTING",
+    quantity: 1,
+    ratedPowerW: 10,
+    powerFactor: 1,
+    operatingHoursPerDay: 5,
+    operatingDaysPerMonth: 30,
+    phase: "SINGLE_PHASE",
+    ...overrides,
+  };
+}
 
-    expect(result.valid).toBe(true);
-    expect(result.errors).toHaveLength(0);
+describe("validateLoad", () => {
+  it("accepts a valid load", () => {
+    const issues = validateLoad(
+      createLoad(),
+    );
+
+    expect(
+      issues.filter(
+        (issue) =>
+          issue.severity === "ERROR",
+      ),
+    ).toHaveLength(0);
   });
 
-  it("rejects an empty load list", () => {
-    const result = validateLoadAudit({
-      ...validInput,
-      loads: [],
-    });
+  it("rejects an empty load ID", () => {
+    const issues = validateLoad(
+      createLoad({
+        id: "",
+      }),
+    );
 
-    expect(result.valid).toBe(false);
     expect(
-      result.errors.some(
-        (error) => error.code === "EMPTY_LOAD_LIST",
+      issues.some(
+        (issue) =>
+          issue.code === "EMPTY_LOAD_ID" &&
+          issue.severity === "ERROR",
+      ),
+    ).toBe(true);
+  });
+
+  it("rejects an empty load name", () => {
+    const issues = validateLoad(
+      createLoad({
+        name: "",
+      }),
+    );
+
+    expect(
+      issues.some(
+        (issue) =>
+          issue.code === "EMPTY_LOAD_NAME" &&
+          issue.severity === "ERROR",
       ),
     ).toBe(true);
   });
 
   it("rejects zero or negative quantity", () => {
-    const result = validateLoadAudit({
-      ...validInput,
-      loads: [
-        {
-          ...validLoad,
-          quantity: 0,
-        },
-      ],
-    });
+    const zeroIssues = validateLoad(
+      createLoad({
+        quantity: 0,
+      }),
+    );
 
-    expect(result.valid).toBe(false);
+    const negativeIssues = validateLoad(
+      createLoad({
+        quantity: -1,
+      }),
+    );
+
+    expect(
+      zeroIssues.some(
+        (issue) =>
+          issue.code === "INVALID_QUANTITY",
+      ),
+    ).toBe(true);
+
+    expect(
+      negativeIssues.some(
+        (issue) =>
+          issue.code === "INVALID_QUANTITY",
+      ),
+    ).toBe(true);
   });
 
-  it("rejects negative rated power", () => {
-    const result = validateLoadAudit({
-      ...validInput,
-      loads: [
-        {
-          ...validLoad,
-          ratedPowerW: -100,
-        },
-      ],
-    });
+  it("rejects zero or negative rated power", () => {
+    const zeroIssues = validateLoad(
+      createLoad({
+        ratedPowerW: 0,
+      }),
+    );
 
-    expect(result.valid).toBe(false);
-  });
+    const negativeIssues = validateLoad(
+      createLoad({
+        ratedPowerW: -100,
+      }),
+    );
 
-  it("rejects hours above 24", () => {
-    const result = validateLoadAudit({
-      ...validInput,
-      loads: [
-        {
-          ...validLoad,
-          hoursPerDay: 25,
-        },
-      ],
-    });
+    expect(
+      zeroIssues.some(
+        (issue) =>
+          issue.code === "INVALID_RATED_POWER",
+      ),
+    ).toBe(true);
 
-    expect(result.valid).toBe(false);
+    expect(
+      negativeIssues.some(
+        (issue) =>
+          issue.code === "INVALID_RATED_POWER",
+      ),
+    ).toBe(true);
   });
 
   it("rejects invalid power factor", () => {
-    const result = validateLoadAudit({
-      ...validInput,
-      loads: [
-        {
-          ...validLoad,
-          powerFactor: 1.5,
-        },
-      ],
-    });
+    const zeroIssues = validateLoad(
+      createLoad({
+        powerFactor: 0,
+      }),
+    );
 
-    expect(result.valid).toBe(false);
+    const highIssues = validateLoad(
+      createLoad({
+        powerFactor: 1.5,
+      }),
+    );
+
+    expect(
+      zeroIssues.some(
+        (issue) =>
+          issue.code === "INVALID_POWER_FACTOR",
+      ),
+    ).toBe(true);
+
+    expect(
+      highIssues.some(
+        (issue) =>
+          issue.code === "INVALID_POWER_FACTOR",
+      ),
+    ).toBe(true);
   });
 
   it("warns about low power factor", () => {
-    const result = validateLoadAudit({
-      ...validInput,
-      loads: [
-        {
-          ...validLoad,
-          powerFactor: 0.7,
-        },
-      ],
-    });
+    const issues = validateLoad(
+      createLoad({
+        powerFactor: 0.7,
+      }),
+    );
 
-    expect(result.valid).toBe(true);
     expect(
-      result.warnings.some(
-        (warning) => warning.code === "LOW_POWER_FACTOR",
+      issues.some(
+        (issue) =>
+          issue.code === "LOW_POWER_FACTOR" &&
+          issue.severity === "WARNING",
+      ),
+    ).toBe(true);
+
+    expect(
+      issues.some(
+        (issue) =>
+          issue.severity === "ERROR",
+      ),
+    ).toBe(false);
+  });
+
+  it("rejects operating hours above 24", () => {
+    const issues = validateLoad(
+      createLoad({
+        operatingHoursPerDay: 25,
+      }),
+    );
+
+    expect(
+      issues.some(
+        (issue) =>
+          issue.code === "INVALID_OPERATING_HOURS",
       ),
     ).toBe(true);
   });
 
-  it("warns when no diversity reduction is applied", () => {
-    const result = validateLoadAudit({
-      ...validInput,
-      diversityFactor: 1,
-    });
+  it("rejects negative operating hours", () => {
+    const issues = validateLoad(
+      createLoad({
+        operatingHoursPerDay: -1,
+      }),
+    );
 
     expect(
-      result.warnings.some(
-        (warning) => warning.code === "NO_DIVERSITY_REDUCTION",
+      issues.some(
+        (issue) =>
+          issue.code === "INVALID_OPERATING_HOURS",
       ),
     ).toBe(true);
   });
 
-  it("warns when no design margin is applied", () => {
-    const result = validateLoadAudit({
-      ...validInput,
-      designMargin: 0,
-    });
+  it("rejects operating days above 31", () => {
+    const issues = validateLoad(
+      createLoad({
+        operatingDaysPerMonth: 32,
+      }),
+    );
 
     expect(
-      result.warnings.some(
-        (warning) => warning.code === "NO_DESIGN_MARGIN",
+      issues.some(
+        (issue) =>
+          issue.code === "INVALID_OPERATING_DAYS",
+      ),
+    ).toBe(true);
+  });
+
+  it("rejects invalid efficiency", () => {
+    const zeroIssues = validateLoad(
+      createLoad({
+        efficiency: 0,
+      }),
+    );
+
+    const highIssues = validateLoad(
+      createLoad({
+        efficiency: 1.1,
+      }),
+    );
+
+    expect(
+      zeroIssues.some(
+        (issue) =>
+          issue.code === "INVALID_EFFICIENCY",
+      ),
+    ).toBe(true);
+
+    expect(
+      highIssues.some(
+        (issue) =>
+          issue.code === "INVALID_EFFICIENCY",
+      ),
+    ).toBe(true);
+  });
+
+  it("rejects invalid demand factor", () => {
+    const zeroIssues = validateLoad(
+      createLoad({
+        demandFactor: 0,
+      }),
+    );
+
+    const highIssues = validateLoad(
+      createLoad({
+        demandFactor: 1.1,
+      }),
+    );
+
+    expect(
+      zeroIssues.some(
+        (issue) =>
+          issue.code === "INVALID_DEMAND_FACTOR",
+      ),
+    ).toBe(true);
+
+    expect(
+      highIssues.some(
+        (issue) =>
+          issue.code === "INVALID_DEMAND_FACTOR",
+      ),
+    ).toBe(true);
+  });
+
+  it("rejects diversity factor below 1", () => {
+    const issues = validateLoad(
+      createLoad({
+        diversityFactor: 0.8,
+      }),
+    );
+
+    expect(
+      issues.some(
+        (issue) =>
+          issue.code === "INVALID_DIVERSITY_FACTOR",
+      ),
+    ).toBe(true);
+  });
+
+  it("accepts diversity factor of 1", () => {
+    const issues = validateLoad(
+      createLoad({
+        diversityFactor: 1,
+      }),
+    );
+
+    expect(
+      issues.some(
+        (issue) =>
+          issue.code === "INVALID_DIVERSITY_FACTOR",
+      ),
+    ).toBe(false);
+  });
+});
+
+describe("validateLoadList", () => {
+  it("rejects an empty load list", () => {
+    const issues = validateLoadList([]);
+
+    expect(
+      issues.some(
+        (issue) =>
+          issue.code === "EMPTY_LOAD_LIST" &&
+          issue.severity === "ERROR",
+      ),
+    ).toBe(true);
+  });
+
+  it("accepts a valid load list", () => {
+    const issues = validateLoadList([
+      createLoad(),
+    ]);
+
+    expect(
+      issues.filter(
+        (issue) =>
+          issue.severity === "ERROR",
+      ),
+    ).toHaveLength(0);
+  });
+
+  it("rejects duplicate load IDs", () => {
+    const issues = validateLoadList([
+      createLoad({
+        id: "LOAD-001",
+      }),
+      createLoad({
+        id: "LOAD-001",
+        name: "Second Load",
+      }),
+    ]);
+
+    expect(
+      issues.some(
+        (issue) =>
+          issue.code === "DUPLICATE_LOAD_ID",
+      ),
+    ).toBe(true);
+  });
+
+  it("prefixes load validation paths with the load index", () => {
+    const issues = validateLoadList([
+      createLoad({
+        quantity: 0,
+      }),
+    ]);
+
+    const issue = issues.find(
+      (item) =>
+        item.code === "INVALID_QUANTITY",
+    );
+
+    expect(issue?.path).toBe(
+      "loads[0].quantity",
+    );
+  });
+
+  it("validates every load in the list", () => {
+    const issues = validateLoadList([
+      createLoad({
+        id: "LOAD-001",
+        quantity: 0,
+      }),
+      createLoad({
+        id: "LOAD-002",
+        ratedPowerW: -100,
+      }),
+    ]);
+
+    expect(
+      issues.some(
+        (issue) =>
+          issue.code === "INVALID_QUANTITY" &&
+          issue.path === "loads[0].quantity",
+      ),
+    ).toBe(true);
+
+    expect(
+      issues.some(
+        (issue) =>
+          issue.code === "INVALID_RATED_POWER" &&
+          issue.path === "loads[1].ratedPowerW",
       ),
     ).toBe(true);
   });

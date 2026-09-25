@@ -1,50 +1,125 @@
+// ============================================================
+// Load Audit Runner
+// ============================================================
+
+import {
+  executeCalculation,
+  defineCalculation,
+} from "@ogwusearch/engineering-core";
+
 import type {
-  EngineeringMetadata,
-  EngineeringResult
+  CalculationResult,
+  EngineeringIssue,
 } from "@ogwusearch/engineering-types";
 
-import type { LoadAuditInput } from "./input";
-import type { LoadAuditResult } from "./result";
+import type {
+  LoadAuditInput,
+  LoadAuditOutput,
+} from "./types/index.js";
 
-import { validateLoadAudit } from "./validation";
-import { calculateLoadAudit } from "./calculation";
+import {
+  validateLoadList,
+} from "./validation/index.js";
 
-const ENGINE_VERSION = "0.1.0";
-const CALCULATION_VERSION = "0.1.0";
-const MODULE_VERSION = "0.1.0";
+import {
+  calculateLoadAudit,
+} from "./calculation.js";
 
-export function runLoadAudit(
-  input: LoadAuditInput
-): EngineeringResult<LoadAuditResult> {
-  const validation =
-    validateLoadAudit(input);
+import {
+  createLoadAssumptions,
+} from "./assumptions/index.js";
 
-  const metadata: EngineeringMetadata = {
-    engineVersion: ENGINE_VERSION,
-    calculationVersion: CALCULATION_VERSION,
-    moduleVersion: MODULE_VERSION,
-    calculatedAt:
-      new Date().toISOString()
-  };
+import {
+  createLoadTrace,
+} from "./trace/load-trace.js";
 
-  if (!validation.valid) {
-    return {
-      success: false,
-      errors: validation.errors,
-      warnings: validation.warnings,
-      metadata
-    };
+import {
+  LOAD_DEFAULTS,
+} from "./constants.js";
+
+// ============================================================
+// Validation
+// ============================================================
+
+function validateLoadAuditInput(
+  input: LoadAuditInput,
+): EngineeringIssue[] {
+  const issues = validateLoadList(
+    input.loads,
+  );
+
+  if (
+    input.designMargin !== undefined &&
+    (
+      input.designMargin < 0 ||
+      input.designMargin > 1
+    )
+  ) {
+    issues.push({
+      code: "INVALID_DESIGN_MARGIN",
+      severity: "ERROR",
+      message:
+        "Design margin must be between 0 and 1.",
+      path: "designMargin",
+      actual: input.designMargin,
+    });
   }
 
-  const calculation =
-    calculateLoadAudit(input);
+  return issues;
+}
+
+// ============================================================
+// Load Audit Definition
+// ============================================================
+
+const loadAuditDefinition =
+  defineCalculation<
+    LoadAuditInput,
+    LoadAuditOutput
+  >({
+    name: "Load Audit",
+
+    validate: validateLoadAuditInput,
+
+    assumptions: (input) =>
+      createLoadAssumptions(
+        input.designMargin ??
+          LOAD_DEFAULTS.designMargin,
+      ),
+
+    calculate: calculateLoadAudit,
+  });
+
+// ============================================================
+// Load Audit Runner
+// ============================================================
+
+export function runLoadAudit(
+  input: LoadAuditInput,
+): CalculationResult<LoadAuditOutput> {
+  const result =
+    executeCalculation(
+      loadAuditDefinition,
+      input,
+    );
 
   return {
-    success: true,
-    value: calculation.value,
-    errors: [],
-    warnings: validation.warnings,
-    trace: calculation.trace,
-    metadata
+    ...result,
+
+    metadata: {
+      ...result.metadata,
+      module: "@ogwusearch/solar-engine",
+      version: "0.1.0",
+      name: "Load Audit",
+      extras: {
+        ...result.metadata?.extras,
+        domain: "load-audit",
+      },
+    },
+
+    trace: {
+      ...result.trace,
+      steps: createLoadTrace(),
+    },
   };
 }

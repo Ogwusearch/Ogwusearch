@@ -1,12 +1,10 @@
-// /home/ogwu/workspace/ogwusearch/packages/solar-engine/src/inverter/errors.ts
-
 import type { EngineeringMessage } from "./types";
 
 export function createInverterSizingError(
   code: string,
   field: string,
   message: string,
-  value?: unknown
+  value?: unknown,
 ): EngineeringMessage {
   const error: EngineeringMessage = {
     code,
@@ -25,13 +23,15 @@ export const INVERTER_SIZING_ERRORS = {
   INVALID_CONTINUOUS_LOAD: {
     code: "INVALID_CONTINUOUS_LOAD",
     field: "continuousLoadW",
-    message: "Continuous load must be greater than zero.",
+    message:
+      "Continuous load must be greater than zero.",
   },
 
   INVALID_SURGE_LOAD: {
     code: "INVALID_SURGE_LOAD",
     field: "surgeLoadW",
-    message: "Surge load must be greater than zero.",
+    message:
+      "Surge load must be greater than zero.",
   },
 
   INVALID_SURGE_LOAD_RELATIONSHIP: {
@@ -44,7 +44,8 @@ export const INVERTER_SIZING_ERRORS = {
   INVALID_SYSTEM_VOLTAGE: {
     code: "INVALID_SYSTEM_VOLTAGE",
     field: "systemVoltageV",
-    message: "System voltage must be greater than zero.",
+    message:
+      "System voltage must be greater than zero.",
   },
 
   INVALID_INVERTER_EFFICIENCY: {

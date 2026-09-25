@@ -2,7 +2,6 @@ import { describe, expect, it } from "vitest";
 
 import { PV_SIZING_ERROR_CODES } from "../errors";
 import { validatePVSizingInput } from "../validation";
-import { PV_SIZING_WARNING_CODES } from "../warnings";
 
 describe("validatePVSizingInput", () => {
   const validInput = {
@@ -30,8 +29,8 @@ describe("validatePVSizingInput", () => {
     expect(result.errors).toContainEqual(
       expect.objectContaining({
         code: PV_SIZING_ERROR_CODES.INVALID_DAILY_ENERGY,
-        field: "dailyEnergyKWh",
-        severity: "error",
+        path: "dailyEnergyKWh",
+        severity: "ERROR",
       }),
     );
   });
@@ -74,8 +73,8 @@ describe("validatePVSizingInput", () => {
     expect(result.errors).toContainEqual(
       expect.objectContaining({
         code: PV_SIZING_ERROR_CODES.INVALID_PEAK_SUN_HOURS,
-        field: "peakSunHours",
-        severity: "error",
+        path: "peakSunHours",
+        severity: "ERROR",
       }),
     );
   });
@@ -118,8 +117,8 @@ describe("validatePVSizingInput", () => {
     expect(result.errors).toContainEqual(
       expect.objectContaining({
         code: PV_SIZING_ERROR_CODES.INVALID_SYSTEM_EFFICIENCY,
-        field: "systemEfficiency",
-        severity: "error",
+        path: "systemEfficiency",
+        severity: "ERROR",
       }),
     );
   });
@@ -172,8 +171,8 @@ describe("validatePVSizingInput", () => {
     expect(result.errors).toContainEqual(
       expect.objectContaining({
         code: PV_SIZING_ERROR_CODES.INVALID_PANEL_POWER,
-        field: "panelPowerW",
-        severity: "error",
+        path: "panelPowerW",
+        severity: "ERROR",
       }),
     );
   });

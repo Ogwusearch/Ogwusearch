@@ -1,9 +1,25 @@
-import { describe, expect, it } from "vitest";
 
-import { PV_ARRAY_ERROR_CODES } from "../errors";
-import { validatePvArrayInput } from "../validation";
-import { PV_ARRAY_WARNING_CODES } from "../warnings";
-import type { PvArrayInput } from "../types";
+import {
+  describe,
+  expect,
+  it,
+} from "vitest";
+
+import {
+  PV_ARRAY_ERROR_CODES,
+} from "../errors";
+
+import {
+  validatePvArrayInput,
+} from "../validation";
+
+import {
+  PV_ARRAY_WARNING_CODES,
+} from "../warnings";
+
+import type {
+  PvArrayInput,
+} from "../types";
 
 const validInput: PvArrayInput = {
   modulePowerW: 550,
@@ -15,13 +31,38 @@ const validInput: PvArrayInput = {
   parallelStrings: 4,
 };
 
+function getErrors(
+  issues: ReturnType<
+    typeof validatePvArrayInput
+  >,
+) {
+  return issues.filter(
+    (issue) =>
+      issue.severity === "ERROR",
+  );
+}
+
+function getWarnings(
+  issues: ReturnType<
+    typeof validatePvArrayInput
+  >,
+) {
+  return issues.filter(
+    (issue) =>
+      issue.severity === "WARNING",
+  );
+}
+
 describe("validatePvArrayInput", () => {
   it("accepts a valid PV array input", () => {
-    const result = validatePvArrayInput(validInput);
+    const result =
+      validatePvArrayInput(validInput);
 
-    expect(result.valid).toBe(true);
-    expect(result.errors).toHaveLength(0);
-    expect(result.warnings).toHaveLength(0);
+    const errors = getErrors(result);
+    const warnings = getWarnings(result);
+
+    expect(errors).toHaveLength(0);
+    expect(warnings).toHaveLength(0);
   });
 
   it("rejects non-finite module power", () => {
@@ -30,14 +71,20 @@ describe("validatePvArrayInput", () => {
       modulePowerW: Number.NaN,
     };
 
-    const result = validatePvArrayInput(input);
+    const result =
+      validatePvArrayInput(input);
 
-    expect(result.valid).toBe(false);
-    expect(result.errors).toContainEqual(
+    const errors = getErrors(result);
+
+    expect(errors.length).toBeGreaterThan(0);
+
+    expect(errors).toContainEqual(
       expect.objectContaining({
-        code: PV_ARRAY_ERROR_CODES.INVALID_MODULE_POWER,
-        field: "modulePowerW",
-        severity: "error",
+        code:
+          PV_ARRAY_ERROR_CODES
+            .INVALID_MODULE_POWER,
+        path: "modulePowerW",
+        severity: "ERROR",
       }),
     );
   });
@@ -48,13 +95,19 @@ describe("validatePvArrayInput", () => {
       modulePowerW: 0,
     };
 
-    const result = validatePvArrayInput(input);
+    const result =
+      validatePvArrayInput(input);
 
-    expect(result.valid).toBe(false);
-    expect(result.errors).toContainEqual(
+    const errors = getErrors(result);
+
+    expect(errors.length).toBeGreaterThan(0);
+
+    expect(errors).toContainEqual(
       expect.objectContaining({
-        code: PV_ARRAY_ERROR_CODES.INVALID_MODULE_POWER,
-        field: "modulePowerW",
+        code:
+          PV_ARRAY_ERROR_CODES
+            .INVALID_MODULE_POWER,
+        path: "modulePowerW",
       }),
     );
   });
@@ -66,21 +119,30 @@ describe("validatePvArrayInput", () => {
       moduleVocV: 0,
     };
 
-    const result = validatePvArrayInput(input);
+    const result =
+      validatePvArrayInput(input);
 
-    expect(result.valid).toBe(false);
+    const errors = getErrors(result);
 
-    expect(result.errors).toContainEqual(
+    expect(errors.length).toBeGreaterThanOrEqual(
+      2,
+    );
+
+    expect(errors).toContainEqual(
       expect.objectContaining({
-        code: PV_ARRAY_ERROR_CODES.INVALID_MODULE_VMP,
-        field: "moduleVmpV",
+        code:
+          PV_ARRAY_ERROR_CODES
+            .INVALID_MODULE_VMP,
+        path: "moduleVmpV",
       }),
     );
 
-    expect(result.errors).toContainEqual(
+    expect(errors).toContainEqual(
       expect.objectContaining({
-        code: PV_ARRAY_ERROR_CODES.INVALID_MODULE_VOC,
-        field: "moduleVocV",
+        code:
+          PV_ARRAY_ERROR_CODES
+            .INVALID_MODULE_VOC,
+        path: "moduleVocV",
       }),
     );
   });
@@ -92,21 +154,30 @@ describe("validatePvArrayInput", () => {
       moduleIscA: 0,
     };
 
-    const result = validatePvArrayInput(input);
+    const result =
+      validatePvArrayInput(input);
 
-    expect(result.valid).toBe(false);
+    const errors = getErrors(result);
 
-    expect(result.errors).toContainEqual(
+    expect(errors.length).toBeGreaterThanOrEqual(
+      2,
+    );
+
+    expect(errors).toContainEqual(
       expect.objectContaining({
-        code: PV_ARRAY_ERROR_CODES.INVALID_MODULE_IMP,
-        field: "moduleImpA",
+        code:
+          PV_ARRAY_ERROR_CODES
+            .INVALID_MODULE_IMP,
+        path: "moduleImpA",
       }),
     );
 
-    expect(result.errors).toContainEqual(
+    expect(errors).toContainEqual(
       expect.objectContaining({
-        code: PV_ARRAY_ERROR_CODES.INVALID_MODULE_ISC,
-        field: "moduleIscA",
+        code:
+          PV_ARRAY_ERROR_CODES
+            .INVALID_MODULE_ISC,
+        path: "moduleIscA",
       }),
     );
   });
@@ -117,13 +188,17 @@ describe("validatePvArrayInput", () => {
       modulesPerString: 10.5,
     };
 
-    const result = validatePvArrayInput(input);
+    const result =
+      validatePvArrayInput(input);
 
-    expect(result.valid).toBe(false);
-    expect(result.errors).toContainEqual(
+    const errors = getErrors(result);
+
+    expect(errors).toContainEqual(
       expect.objectContaining({
-        code: PV_ARRAY_ERROR_CODES.INVALID_MODULES_PER_STRING,
-        field: "modulesPerString",
+        code:
+          PV_ARRAY_ERROR_CODES
+            .INVALID_MODULES_PER_STRING,
+        path: "modulesPerString",
       }),
     );
   });
@@ -134,13 +209,17 @@ describe("validatePvArrayInput", () => {
       modulesPerString: 0,
     };
 
-    const result = validatePvArrayInput(input);
+    const result =
+      validatePvArrayInput(input);
 
-    expect(result.valid).toBe(false);
-    expect(result.errors).toContainEqual(
+    const errors = getErrors(result);
+
+    expect(errors).toContainEqual(
       expect.objectContaining({
-        code: PV_ARRAY_ERROR_CODES.INVALID_MODULES_PER_STRING,
-        field: "modulesPerString",
+        code:
+          PV_ARRAY_ERROR_CODES
+            .INVALID_MODULES_PER_STRING,
+        path: "modulesPerString",
       }),
     );
   });
@@ -151,13 +230,17 @@ describe("validatePvArrayInput", () => {
       parallelStrings: 2.5,
     };
 
-    const result = validatePvArrayInput(input);
+    const result =
+      validatePvArrayInput(input);
 
-    expect(result.valid).toBe(false);
-    expect(result.errors).toContainEqual(
+    const errors = getErrors(result);
+
+    expect(errors).toContainEqual(
       expect.objectContaining({
-        code: PV_ARRAY_ERROR_CODES.INVALID_PARALLEL_STRINGS,
-        field: "parallelStrings",
+        code:
+          PV_ARRAY_ERROR_CODES
+            .INVALID_PARALLEL_STRINGS,
+        path: "parallelStrings",
       }),
     );
   });
@@ -168,13 +251,17 @@ describe("validatePvArrayInput", () => {
       parallelStrings: 0,
     };
 
-    const result = validatePvArrayInput(input);
+    const result =
+      validatePvArrayInput(input);
 
-    expect(result.valid).toBe(false);
-    expect(result.errors).toContainEqual(
+    const errors = getErrors(result);
+
+    expect(errors).toContainEqual(
       expect.objectContaining({
-        code: PV_ARRAY_ERROR_CODES.INVALID_PARALLEL_STRINGS,
-        field: "parallelStrings",
+        code:
+          PV_ARRAY_ERROR_CODES
+            .INVALID_PARALLEL_STRINGS,
+        path: "parallelStrings",
       }),
     );
   });
@@ -186,13 +273,17 @@ describe("validatePvArrayInput", () => {
       moduleVocV: 49.5,
     };
 
-    const result = validatePvArrayInput(input);
+    const result =
+      validatePvArrayInput(input);
 
-    expect(result.valid).toBe(false);
-    expect(result.errors).toContainEqual(
+    const errors = getErrors(result);
+
+    expect(errors).toContainEqual(
       expect.objectContaining({
-        code: PV_ARRAY_ERROR_CODES.VMP_EXCEEDS_VOC,
-        field: "moduleVmpV",
+        code:
+          PV_ARRAY_ERROR_CODES
+            .VMP_EXCEEDS_VOC,
+        path: "moduleVmpV",
       }),
     );
   });
@@ -204,13 +295,17 @@ describe("validatePvArrayInput", () => {
       moduleIscA: 14.1,
     };
 
-    const result = validatePvArrayInput(input);
+    const result =
+      validatePvArrayInput(input);
 
-    expect(result.valid).toBe(false);
-    expect(result.errors).toContainEqual(
+    const errors = getErrors(result);
+
+    expect(errors).toContainEqual(
       expect.objectContaining({
-        code: PV_ARRAY_ERROR_CODES.IMP_EXCEEDS_ISC,
-        field: "moduleImpA",
+        code:
+          PV_ARRAY_ERROR_CODES
+            .IMP_EXCEEDS_ISC,
+        path: "moduleImpA",
       }),
     );
   });
@@ -222,13 +317,17 @@ describe("validatePvArrayInput", () => {
       maxArrayVoltageV: 400,
     };
 
-    const result = validatePvArrayInput(input);
+    const result =
+      validatePvArrayInput(input);
 
-    expect(result.valid).toBe(false);
-    expect(result.errors).toContainEqual(
+    const errors = getErrors(result);
+
+    expect(errors).toContainEqual(
       expect.objectContaining({
-        code: PV_ARRAY_ERROR_CODES.VOC_EXCEEDS_LIMIT,
-        field: "maxArrayVoltageV",
+        code:
+          PV_ARRAY_ERROR_CODES
+            .VOC_EXCEEDS_LIMIT,
+        path: "maxArrayVoltageV",
       }),
     );
   });
@@ -240,13 +339,17 @@ describe("validatePvArrayInput", () => {
       maxArrayCurrentA: 50,
     };
 
-    const result = validatePvArrayInput(input);
+    const result =
+      validatePvArrayInput(input);
 
-    expect(result.valid).toBe(false);
-    expect(result.errors).toContainEqual(
+    const errors = getErrors(result);
+
+    expect(errors).toContainEqual(
       expect.objectContaining({
-        code: PV_ARRAY_ERROR_CODES.ISC_EXCEEDS_LIMIT,
-        field: "maxArrayCurrentA",
+        code:
+          PV_ARRAY_ERROR_CODES
+            .ISC_EXCEEDS_LIMIT,
+        path: "maxArrayCurrentA",
       }),
     );
   });
@@ -257,13 +360,17 @@ describe("validatePvArrayInput", () => {
       maxArrayPowerW: 20000,
     };
 
-    const result = validatePvArrayInput(input);
+    const result =
+      validatePvArrayInput(input);
 
-    expect(result.valid).toBe(false);
-    expect(result.errors).toContainEqual(
+    const errors = getErrors(result);
+
+    expect(errors).toContainEqual(
       expect.objectContaining({
-        code: PV_ARRAY_ERROR_CODES.POWER_EXCEEDS_LIMIT,
-        field: "maxArrayPowerW",
+        code:
+          PV_ARRAY_ERROR_CODES
+            .POWER_EXCEEDS_LIMIT,
+        path: "maxArrayPowerW",
       }),
     );
   });
@@ -274,13 +381,17 @@ describe("validatePvArrayInput", () => {
       maxArrayVoltageV: 0,
     };
 
-    const result = validatePvArrayInput(input);
+    const result =
+      validatePvArrayInput(input);
 
-    expect(result.valid).toBe(false);
-    expect(result.errors).toContainEqual(
+    const errors = getErrors(result);
+
+    expect(errors).toContainEqual(
       expect.objectContaining({
-        code: PV_ARRAY_ERROR_CODES.INVALID_MAX_VOLTAGE,
-        field: "maxArrayVoltageV",
+        code:
+          PV_ARRAY_ERROR_CODES
+            .INVALID_MAX_VOLTAGE,
+        path: "maxArrayVoltageV",
       }),
     );
   });
@@ -291,13 +402,17 @@ describe("validatePvArrayInput", () => {
       maxArrayCurrentA: -1,
     };
 
-    const result = validatePvArrayInput(input);
+    const result =
+      validatePvArrayInput(input);
 
-    expect(result.valid).toBe(false);
-    expect(result.errors).toContainEqual(
+    const errors = getErrors(result);
+
+    expect(errors).toContainEqual(
       expect.objectContaining({
-        code: PV_ARRAY_ERROR_CODES.INVALID_MAX_CURRENT,
-        field: "maxArrayCurrentA",
+        code:
+          PV_ARRAY_ERROR_CODES
+            .INVALID_MAX_CURRENT,
+        path: "maxArrayCurrentA",
       }),
     );
   });
@@ -305,16 +420,21 @@ describe("validatePvArrayInput", () => {
   it("rejects invalid optional maximum power", () => {
     const input: PvArrayInput = {
       ...validInput,
-      maxArrayPowerW: Number.POSITIVE_INFINITY,
+      maxArrayPowerW:
+        Number.POSITIVE_INFINITY,
     };
 
-    const result = validatePvArrayInput(input);
+    const result =
+      validatePvArrayInput(input);
 
-    expect(result.valid).toBe(false);
-    expect(result.errors).toContainEqual(
+    const errors = getErrors(result);
+
+    expect(errors).toContainEqual(
       expect.objectContaining({
-        code: PV_ARRAY_ERROR_CODES.INVALID_MAX_POWER,
-        field: "maxArrayPowerW",
+        code:
+          PV_ARRAY_ERROR_CODES
+            .INVALID_MAX_POWER,
+        path: "maxArrayPowerW",
       }),
     );
   });
@@ -331,10 +451,14 @@ describe("validatePvArrayInput", () => {
       parallelStrings: 0,
     };
 
-    const result = validatePvArrayInput(input);
+    const result =
+      validatePvArrayInput(input);
 
-    expect(result.valid).toBe(false);
-    expect(result.errors.length).toBeGreaterThanOrEqual(7);
+    const errors = getErrors(result);
+
+    expect(errors.length).toBeGreaterThanOrEqual(
+      7,
+    );
   });
 
   it("returns a warning for a single-module series string", () => {
@@ -343,15 +467,21 @@ describe("validatePvArrayInput", () => {
       modulesPerString: 1,
     };
 
-    const result = validatePvArrayInput(input);
+    const result =
+      validatePvArrayInput(input);
 
-    expect(result.valid).toBe(true);
-    expect(result.errors).toHaveLength(0);
-    expect(result.warnings).toContainEqual(
+    const errors = getErrors(result);
+    const warnings = getWarnings(result);
+
+    expect(errors).toHaveLength(0);
+
+    expect(warnings).toContainEqual(
       expect.objectContaining({
-        code: PV_ARRAY_WARNING_CODES.SINGLE_MODULE_STRING,
-        field: "modulesPerString",
-        severity: "warning",
+        code:
+          PV_ARRAY_WARNING_CODES
+            .SINGLE_MODULE_STRING,
+        path: "modulesPerString",
+        severity: "WARNING",
       }),
     );
   });
@@ -362,11 +492,14 @@ describe("validatePvArrayInput", () => {
       modulesPerString: 1,
     };
 
-    const result = validatePvArrayInput(input);
+    const result =
+      validatePvArrayInput(input);
 
-    expect(result.valid).toBe(true);
-    expect(result.errors).toHaveLength(0);
-    expect(result.warnings.length).toBeGreaterThan(0);
+    const errors = getErrors(result);
+    const warnings = getWarnings(result);
+
+    expect(errors).toHaveLength(0);
+    expect(warnings.length).toBeGreaterThan(0);
   });
 
   it("does not mutate the input", () => {

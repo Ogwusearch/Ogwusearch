@@ -1,6 +1,7 @@
+
 import { describe, expect, it } from "vitest";
 
-import { calculatePvArray } from "../calculate";
+import { calculatePvArray } from "../calculation";
 import type { PvArrayInput } from "../types";
 
 describe("calculatePvArray", () => {

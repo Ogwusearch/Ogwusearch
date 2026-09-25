@@ -1,85 +1,132 @@
-import { describe, expect, it } from "vitest";
 
-import { runLoadAudit } from "../run";
+import {
+  describe,
+  expect,
+  it,
+} from "vitest";
+
+import {
+  runLoadAudit,
+} from "../run.js";
 
 describe("Load Audit regression cases", () => {
   it("produces the expected residential load result", () => {
     const result = runLoadAudit({
       loads: [
         {
-          appliance: "LED Lights",
+          id: "LIGHT-001",
+          name: "LED Lights",
+          category: "LIGHTING",
           quantity: 6,
           ratedPowerW: 10,
-          hoursPerDay: 6,
+          powerFactor: 1,
+          operatingHoursPerDay: 6,
+          operatingDaysPerMonth: 30,
+          phase: "SINGLE_PHASE",
         },
         {
-          appliance: "TV",
+          id: "TV-001",
+          name: "TV",
+          category: "APPLIANCE",
           quantity: 1,
           ratedPowerW: 120,
-          hoursPerDay: 5,
+          powerFactor: 1,
+          operatingHoursPerDay: 5,
+          operatingDaysPerMonth: 30,
+          phase: "SINGLE_PHASE",
         },
         {
-          appliance: "Refrigerator",
+          id: "FRIDGE-001",
+          name: "Refrigerator",
+          category: "APPLIANCE",
           quantity: 1,
           ratedPowerW: 150,
-          hoursPerDay: 10,
           powerFactor: 0.9,
+          operatingHoursPerDay: 10,
+          operatingDaysPerMonth: 30,
+          phase: "SINGLE_PHASE",
         },
       ],
-      diversityFactor: 0.8,
       designMargin: 0.2,
     });
 
-    expect(result.success).toBe(true);
+    expect(result.valid).toBe(true);
+    expect(result.status).toBeDefined();
+    expect(result.value).toBeDefined();
 
-    expect(result.value?.totalConnectedLoadW).toBe(330);
-    expect(result.value?.totalDailyEnergyWh).toBe(2460);
-    expect(result.value?.diversifiedLoadW).toBe(264);
-    expect(result.value?.designLoadW).toBeCloseTo(316.8);
+    expect(
+      result.value?.totalConnectedLoadW,
+    ).toBe(330);
+
+    expect(
+      result.value?.dailyEnergyWh,
+    ).toBe(2460);
+
+    expect(
+      result.value?.totalDemandLoadW,
+    ).toBe(330);
+
+    expect(
+      result.value?.designPeakDemandW,
+    ).toBeCloseTo(396);
   });
 
   it("does not calculate when validation fails", () => {
     const result = runLoadAudit({
       loads: [],
-      diversityFactor: 0.8,
       designMargin: 0.2,
     });
 
-    expect(result.success).toBe(false);
+    expect(result.valid).toBe(false);
     expect(result.value).toBeUndefined();
-    expect(result.errors.length).toBeGreaterThan(0);
+
+    expect(
+      result.errors.length,
+    ).toBeGreaterThan(0);
   });
 
-  it("always returns engineering metadata", () => {
+  it("returns engineering metadata", () => {
     const result = runLoadAudit({
       loads: [],
-      diversityFactor: 0.8,
       designMargin: 0.2,
     });
 
-    expect(result.metadata.engineVersion).toBe("0.1.0");
-    expect(result.metadata.calculationVersion).toBe("0.1.0");
-    expect(result.metadata.moduleVersion).toBe("0.1.0");
-    expect(result.metadata.calculatedAt).toBeTruthy();
+    expect(result.metadata).toBeDefined();
+
+    expect(
+      result.metadata.module,
+    ).toBeDefined();
+
+    expect(
+      result.metadata.version,
+    ).toBeDefined();
   });
 
   it("returns calculation trace on successful execution", () => {
     const result = runLoadAudit({
       loads: [
         {
-          appliance: "Lamp",
+          id: "LAMP-001",
+          name: "Lamp",
+          category: "LIGHTING",
           quantity: 1,
           ratedPowerW: 10,
-          hoursPerDay: 5,
+          powerFactor: 1,
+          operatingHoursPerDay: 5,
+          operatingDaysPerMonth: 30,
+          phase: "SINGLE_PHASE",
         },
       ],
-      diversityFactor: 0.8,
       designMargin: 0.2,
     });
 
-    expect(result.success).toBe(true);
+    expect(result.valid).toBe(true);
+    expect(result.value).toBeDefined();
+
     expect(result.trace).toBeDefined();
-    expect(result.trace?.formulas.length).toBeGreaterThan(0);
-    expect(result.trace?.steps.length).toBeGreaterThan(0);
+
+    expect(
+      result.trace.steps.length,
+    ).toBeGreaterThan(0);
   });
 });

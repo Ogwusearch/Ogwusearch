@@ -1,144 +1,93 @@
-
-import type {
-  CalculationOutput,
-  CalculationTrace
-} from "@ogwusearch/engineering-types";
+// ============================================================
+// Load Audit Calculation
+// ============================================================
 
 import type {
   LoadAuditInput,
-  LoadItemInput
-} from "./input";
+  LoadAuditOutput,
+  LoadResult,
+} from "./types/index.js";
 
-import type {
-  LoadAuditResult,
-  LoadItemResult
-} from "./result";
+import {
+  calculateLoad,
+  calculateDailyEnergy,
+  calculateMonthlyEnergy,
+  calculatePeakDemand,
+} from "./calculation/index.js";
 
-import { LOAD_AUDIT_CONSTANTS } from "./constants";
-import { buildLoadAuditTrace } from "./trace";
-
-function calculateLoadItem(
-  load: LoadItemInput
-): LoadItemResult {
-  const totalPowerW =
-    load.quantity * load.ratedPowerW;
-
-  const dailyEnergyWh =
-    totalPowerW * load.hoursPerDay;
-
-  const daysPerWeek =
-    load.daysPerWeek ??
-    LOAD_AUDIT_CONSTANTS.DEFAULT_DAYS_PER_WEEK;
-
-  const weeklyEnergyWh =
-    dailyEnergyWh * daysPerWeek;
-
-  const baseResult = {
-    appliance: load.appliance,
-    quantity: load.quantity,
-
-    ratedPowerW: load.ratedPowerW,
-    totalPowerW,
-
-    hoursPerDay: load.hoursPerDay,
-
-    dailyEnergyWh,
-    dailyEnergyKWh:
-      dailyEnergyWh /
-      LOAD_AUDIT_CONSTANTS.WH_PER_KWH,
-
-    weeklyEnergyWh,
-    weeklyEnergyKWh:
-      weeklyEnergyWh /
-      LOAD_AUDIT_CONSTANTS.WH_PER_KWH
-  };
-
-  if (load.powerFactor !== undefined) {
-    return {
-      ...baseResult,
-      powerFactor: load.powerFactor,
-      apparentPowerVA:
-        totalPowerW / load.powerFactor
-    };
-  }
-
-  return baseResult;
-}
+import {
+  LOAD_DEFAULTS,
+} from "./constants.js";
 
 export function calculateLoadAudit(
-  input: LoadAuditInput
-): CalculationOutput<LoadAuditResult> {
-  const loads = input.loads.map(
-    calculateLoadItem
-  );
+  input: LoadAuditInput,
+): LoadAuditOutput {
+  const designMargin =
+    input.designMargin ??
+    LOAD_DEFAULTS.designMargin;
+
+  const loads: LoadResult[] =
+    input.loads.map(calculateLoad);
 
   const totalConnectedLoadW =
     loads.reduce(
-      (sum, load) =>
-        sum + load.totalPowerW,
-      0
+      (total, load) =>
+        total + load.connectedLoadW,
+      0,
     );
 
-  const totalDailyEnergyWh =
+  const totalRunningLoadW =
     loads.reduce(
-      (sum, load) =>
-        sum + load.dailyEnergyWh,
-      0
+      (total, load) =>
+        total + load.runningLoadW,
+      0,
     );
 
-  const totalWeeklyEnergyWh =
+  const totalDemandLoadW =
     loads.reduce(
-      (sum, load) =>
-        sum + load.weeklyEnergyWh,
-      0
+      (total, load) =>
+        total + load.demandLoadW,
+      0,
     );
 
-  const diversifiedLoadW =
-    totalConnectedLoadW *
-    input.diversityFactor;
-
-  const designLoadW =
-    diversifiedLoadW *
-    (1 + input.designMargin);
-
-  const value: LoadAuditResult = {
-    loads,
-
-    totalConnectedLoadW,
-    totalConnectedLoadKW:
-      totalConnectedLoadW / 1000,
-
-    diversifiedLoadW,
-    diversifiedLoadKW:
-      diversifiedLoadW / 1000,
-
-    designLoadW,
-    designLoadKW:
-      designLoadW / 1000,
-
-    totalDailyEnergyWh,
-    totalDailyEnergyKWh:
-      totalDailyEnergyWh / 1000,
-
-    totalWeeklyEnergyWh,
-    totalWeeklyEnergyKWh:
-      totalWeeklyEnergyWh / 1000,
-
-    diversityFactor:
-      input.diversityFactor,
-
-    designMargin:
-      input.designMargin
-  };
-
-  const trace: CalculationTrace =
-    buildLoadAuditTrace(
-      input,
-      value
+  const totalApparentPowerVA =
+    loads.reduce(
+      (total, load) =>
+        total + load.apparentPowerVA,
+      0,
     );
+
+  const dailyEnergyWh =
+    calculateDailyEnergy(loads);
+
+  const monthlyEnergyWh =
+    calculateMonthlyEnergy(loads);
+
+  const {
+    peakDemandW,
+    peakDemandVA,
+  } = calculatePeakDemand(loads);
+
+  const designPeakDemandW =
+    peakDemandW *
+    (1 + designMargin);
+
+  const designPeakDemandVA =
+    peakDemandVA *
+    (1 + designMargin);
 
   return {
-    value,
-    trace
+    loads,
+    totalConnectedLoadW,
+    totalRunningLoadW,
+    totalDemandLoadW,
+    totalApparentPowerVA,
+    dailyEnergyWh,
+    monthlyEnergyWh,
+    peakDemandW,
+    peakDemandVA,
+    designMargin,
+    designPeakDemandW,
+    designPeakDemandVA,
   };
 }

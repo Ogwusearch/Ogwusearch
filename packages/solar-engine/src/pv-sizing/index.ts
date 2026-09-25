@@ -1,41 +1,55 @@
 export type {
   PVSizingInput,
+  PVSizingOutput,
   PVSizingValue,
-  PVSizingCalculationContext,
-} from "./types";
+} from "./types/index.js";
 
 export {
   PV_SIZING_CONSTANTS,
-} from "./constants";
+} from "./constants.js";
 
 export type {
   PVSizingConstants,
-} from "./constants";
+} from "./constants.js";
 
 export {
   PV_SIZING_ERROR_CODES,
-} from "./errors";
+} from "./errors.js";
 
 export type {
   PVSizingErrorCode,
-} from "./errors";
+} from "./errors.js";
 
 export {
   PV_SIZING_WARNING_CODES,
-} from "./warnings";
+} from "./warnings.js";
 
 export type {
   PVSizingWarningCode,
-} from "./warnings";
+} from "./warnings.js";
 
 export {
   calculatePVSizing,
-} from "./calculate";
+} from "./calculate.js";
+
+export {
+  calculatePVEnergy,
+  calculateArraySizeW,
+  calculateArraySizeKW,
+  calculatePanelCount,
+  calculateInstalledCapacityW,
+  calculateInstalledCapacityKW,
+} from "./calculation/index.js";
 
 export {
   validatePVSizingInput,
-} from "./validation";
+  validatePVSizingIssues,
+} from "./validation/index.js";
 
 export {
   generatePVSizingWarnings,
-} from "./warnings";
+} from "./warnings.js";
+
+export {
+  runPVSizing,
+} from "./run.js";

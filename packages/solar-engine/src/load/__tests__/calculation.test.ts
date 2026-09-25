@@ -1,180 +1,213 @@
-import { describe, expect, it } from "vitest";
 
-import { calculateLoadAudit } from "../calculation";
-import type { LoadAuditInput } from "../input";
+import {
+  describe,
+  expect,
+  it,
+} from "vitest";
+
+import {
+  calculateLoadAudit,
+} from "../calculation.js";
+
+import type {
+  LoadAuditInput,
+} from "../types/load-input.js";
+
+function createLoad(
+  overrides: Partial<
+    LoadAuditInput["loads"][number]
+  > = {},
+): LoadAuditInput["loads"][number] {
+  return {
+    id: "LOAD-001",
+    name: "Test Load",
+    category: "APPLIANCE",
+    quantity: 1,
+    ratedPowerW: 100,
+    powerFactor: 1,
+    operatingHoursPerDay: 2,
+    operatingDaysPerMonth: 30,
+    phase: "SINGLE_PHASE",
+    ...overrides,
+  };
+}
 
 describe("calculateLoadAudit", () => {
   it("calculates total connected load", () => {
     const input: LoadAuditInput = {
       loads: [
-        {
-          appliance: "LED Lamp",
+        createLoad({
           quantity: 4,
           ratedPowerW: 10,
-          hoursPerDay: 5,
-        },
+          operatingHoursPerDay: 5,
+        }),
       ],
-      diversityFactor: 1,
       designMargin: 0,
     };
 
-    const result = calculateLoadAudit(input);
+    const result =
+      calculateLoadAudit(input);
 
-    expect(result.value.totalConnectedLoadW).toBe(40);
-    expect(result.value.totalConnectedLoadKW).toBe(0.04);
+    expect(
+      result.totalConnectedLoadW,
+    ).toBe(40);
   });
 
   it("calculates daily energy", () => {
     const input: LoadAuditInput = {
       loads: [
-        {
-          appliance: "LED Lamp",
+        createLoad({
           quantity: 4,
           ratedPowerW: 10,
-          hoursPerDay: 5,
-        },
+          operatingHoursPerDay: 5,
+        }),
       ],
-      diversityFactor: 1,
       designMargin: 0,
     };
 
-    const result = calculateLoadAudit(input);
+    const result =
+      calculateLoadAudit(input);
 
-    expect(result.value.totalDailyEnergyWh).toBe(200);
-    expect(result.value.totalDailyEnergyKWh).toBe(0.2);
+    expect(
+      result.dailyEnergyWh,
+    ).toBe(200);
   });
 
-  it("calculates weekly energy using the default 7 days", () => {
+  it("calculates monthly energy", () => {
     const input: LoadAuditInput = {
       loads: [
-        {
-          appliance: "LED Lamp",
+        createLoad({
           quantity: 4,
           ratedPowerW: 10,
-          hoursPerDay: 5,
-        },
+          operatingHoursPerDay: 5,
+          operatingDaysPerMonth: 30,
+        }),
       ],
-      diversityFactor: 1,
       designMargin: 0,
     };
 
-    const result = calculateLoadAudit(input);
+    const result =
+      calculateLoadAudit(input);
 
-    expect(result.value.totalWeeklyEnergyWh).toBe(1400);
-    expect(result.value.totalWeeklyEnergyKWh).toBe(1.4);
-  });
-
-  it("uses explicitly supplied days per week", () => {
-    const input: LoadAuditInput = {
-      loads: [
-        {
-          appliance: "Water Pump",
-          quantity: 1,
-          ratedPowerW: 500,
-          hoursPerDay: 2,
-          daysPerWeek: 5,
-        },
-      ],
-      diversityFactor: 1,
-      designMargin: 0,
-    };
-
-    const result = calculateLoadAudit(input);
-
-    expect(result.value.totalWeeklyEnergyWh).toBe(5000);
-    expect(result.value.totalWeeklyEnergyKWh).toBe(5);
+    expect(
+      result.monthlyEnergyWh,
+    ).toBe(6000);
   });
 
   it("applies diversity factor", () => {
     const input: LoadAuditInput = {
       loads: [
-        {
-          appliance: "Load A",
-          quantity: 1,
+        createLoad({
+          id: "LOAD-A",
+          name: "Load A",
           ratedPowerW: 1000,
-          hoursPerDay: 1,
-        },
-        {
-          appliance: "Load B",
-          quantity: 1,
+          operatingHoursPerDay: 1,
+          diversityFactor: 1.25,
+        }),
+        createLoad({
+          id: "LOAD-B",
+          name: "Load B",
           ratedPowerW: 500,
-          hoursPerDay: 1,
-        },
+          operatingHoursPerDay: 1,
+          diversityFactor: 1.25,
+        }),
       ],
-      diversityFactor: 0.8,
       designMargin: 0,
     };
 
-    const result = calculateLoadAudit(input);
+    const result =
+      calculateLoadAudit(input);
 
-    expect(result.value.totalConnectedLoadW).toBe(1500);
-    expect(result.value.diversifiedLoadW).toBe(1200);
+    expect(
+      result.totalConnectedLoadW,
+    ).toBe(1500);
+
+    expect(
+      result.totalDemandLoadW,
+    ).toBe(1200);
   });
 
   it("applies design margin", () => {
     const input: LoadAuditInput = {
       loads: [
-        {
-          appliance: "Load",
-          quantity: 1,
+        createLoad({
           ratedPowerW: 1000,
-          hoursPerDay: 1,
-        },
+          operatingHoursPerDay: 1,
+        }),
       ],
-      diversityFactor: 0.8,
       designMargin: 0.25,
     };
 
-    const result = calculateLoadAudit(input);
+    const result =
+      calculateLoadAudit(input);
 
-    expect(result.value.diversifiedLoadW).toBe(800);
-    expect(result.value.designLoadW).toBe(1000);
+    expect(
+      result.peakDemandW,
+    ).toBe(1000);
+
+    expect(
+      result.designPeakDemandW,
+    ).toBe(1250);
   });
 
   it("calculates apparent power when power factor is provided", () => {
     const input: LoadAuditInput = {
       loads: [
-        {
-          appliance: "Motor",
-          quantity: 1,
+        createLoad({
           ratedPowerW: 1000,
-          hoursPerDay: 2,
+          operatingHoursPerDay: 2,
           powerFactor: 0.8,
-        },
+        }),
       ],
-      diversityFactor: 1,
       designMargin: 0,
     };
 
-    const result = calculateLoadAudit(input);
-expect(result.value.loads[0]?.apparentPowerVA).toBe(1250);
+    const result =
+      calculateLoadAudit(input);
+
+    expect(
+      result.loads[0]?.apparentPowerVA,
+    ).toBe(1250);
   });
 
   it("calculates multiple loads independently", () => {
     const input: LoadAuditInput = {
       loads: [
-        {
-          appliance: "Lamp",
+        createLoad({
+          id: "LOAD-001",
+          name: "Lamp",
           quantity: 4,
           ratedPowerW: 20,
-          hoursPerDay: 5,
-        },
-        {
-          appliance: "TV",
+          operatingHoursPerDay: 5,
+        }),
+        createLoad({
+          id: "LOAD-002",
+          name: "TV",
           quantity: 1,
           ratedPowerW: 120,
-          hoursPerDay: 6,
-        },
+          operatingHoursPerDay: 6,
+        }),
       ],
-      diversityFactor: 0.75,
       designMargin: 0.2,
     };
 
-    const result = calculateLoadAudit(input);
+    const result =
+      calculateLoadAudit(input);
 
-    expect(result.value.totalConnectedLoadW).toBe(200);
-    expect(result.value.totalDailyEnergyWh).toBe(1120);
-    expect(result.value.diversifiedLoadW).toBe(150);
-    expect(result.value.designLoadW).toBe(180);
+    expect(
+      result.totalConnectedLoadW,
+    ).toBe(200);
+
+    expect(
+      result.dailyEnergyWh,
+    ).toBe(1120);
+
+    expect(
+      result.totalDemandLoadW,
+    ).toBe(200);
+
+    expect(
+      result.designPeakDemandW,
+    ).toBe(240);
   });
 });

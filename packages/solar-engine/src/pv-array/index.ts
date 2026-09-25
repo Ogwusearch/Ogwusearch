@@ -1,21 +1,31 @@
 export type {
   PvArrayInput,
   PvArrayOutput,
-  PvArrayCalculationContext,
-} from "./types";
+} from "./types/index.js";
 
 export {
-  PV_ARRAY_CONSTANTS,
-} from "./constants";
-
-export type {
-  PvArrayConstants,
-} from "./constants";
-
-export {
+  validatePvArray,
   validatePvArrayInput,
-} from "./validation";
+} from "./validation/index.js";
+
+export {
+  calculateArrayCurrent,
+  calculateArrayPower,
+  calculateArrayVoltage,
+} from "./calculation/index.js";
 
 export {
   calculatePvArray,
-} from "./calculate";
+} from "./calculation.js";
+
+export {
+  createPvArrayAssumptions,
+} from "./assumptions/index.js";
+
+export {
+  createPvArrayTrace,
+} from "./trace/index.js";
+
+export {
+  runPvArray,
+} from "./run.js";

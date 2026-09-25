@@ -13,7 +13,7 @@
   },
   "scripts": {
     "build": "tsc -p tsconfig.json",
-    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "typecheck": "tsc -b tsconfig.json",
     "test": "vitest run",
     "test:watch": "vitest"
   },
@@ -24,7 +24,7 @@
     "@ogwusearch/engineering-validation": "workspace:*"
   },
   "devDependencies": {
-    "typescript": "workspace:*",
-    "vitest": "workspace:*"
+    "typescript": "^5.0.0",
+    "vitest": "^5.0.1"
   }
 }

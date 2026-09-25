@@ -1,26 +1,18 @@
-export const LOAD_AUDIT_CONSTANTS = {
-  WH_PER_KWH: 1000,
+// ============================================================
+// Load Constants
+// ============================================================
 
-  DEFAULT_DAYS_PER_WEEK: 7,
+export const LOAD_DEFAULTS = {
+  powerFactor: 1,
+  efficiency: 1,
+  demandFactor: 1,
+  diversityFactor: 1,
+  designMargin: 0.2,
+} as const;
 
-  MIN_QUANTITY: 1,
-  MAX_QUANTITY: 10_000,
-
-  MIN_POWER_W: 0.1,
-  MAX_POWER_W: 1_000_000,
-
-  MIN_HOURS_PER_DAY: 0,
-  MAX_HOURS_PER_DAY: 24,
-
-  MIN_DAYS_PER_WEEK: 1,
-  MAX_DAYS_PER_WEEK: 7,
-
-  MIN_POWER_FACTOR: 0.1,
-  MAX_POWER_FACTOR: 1,
-
-  MIN_DIVERSITY_FACTOR: 0.01,
-  MAX_DIVERSITY_FACTOR: 1,
-
-  MIN_DESIGN_MARGIN: 0,
-  MAX_DESIGN_MARGIN: 5
+export const LOAD_LIMITS = {
+  maximumOperatingHoursPerDay: 24,
+  maximumOperatingDaysPerMonth: 31,
+  minimumPowerFactor: 0,
+  maximumPowerFactor: 1,
 } as const;

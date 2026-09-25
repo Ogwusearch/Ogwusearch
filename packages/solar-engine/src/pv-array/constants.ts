@@ -1,3 +1,4 @@
+
 export const PV_ARRAY_CONSTANTS = {
   /**
    * Minimum number of modules allowed in a series string.
@@ -25,19 +26,11 @@ export const PV_ARRAY_CONSTANTS = {
   minModuleCurrentA: 0,
 
   /**
-   * Default engineering safety margin for array sizing.
-   *
-   * This value is intentionally zero here. Design margins should normally
-   * be supplied explicitly by the calling calculation rather than hidden
-   * inside the PV array mathematics.
-   */
-  defaultDesignMargin: 0,
-
-  /**
-   * Default numerical precision used when presenting calculated
-   * PV-array values.
+   * Default numerical precision used when presenting
+   * calculated PV-array values.
    */
   defaultPrecision: 3,
 } as const;
 
-export type PvArrayConstants = typeof PV_ARRAY_CONSTANTS;
+export type PvArrayConstants =
+  typeof PV_ARRAY_CONSTANTS;
