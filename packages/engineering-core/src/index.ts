@@ -18,3 +18,9 @@ export * from "./trace/trace-context.js";
 export * from "./assumptions/assumption-builder.js";
 
 export * from "./errors/CalculationError.js";
+
+export * from "./formulas/power.js";
+export * from "./formulas/current.js";
+export * from "./formulas/energy.js";
+export * from "./formulas/ohms-law.js";
+export * from "./formulas/resistance.js";
