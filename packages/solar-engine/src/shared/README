@@ -1,0 +1,709 @@
+# Solar Engine — Shared Engineering Layer
+
+The `src/shared` directory contains reusable **solar-domain engineering utilities** used by multiple modules within `@ogwusearch/solar-engine`.
+
+It exists to prevent duplication of common solar calculations, constants, assumptions, temperature adjustments, derating functions, standards references, warnings, and calculation-trace construction.
+
+The shared layer is part of the **domain package**. It is not a replacement for the generic foundation packages.
+
+---
+
+## Responsibility
+
+The shared layer owns reusable solar-specific behavior such as:
+
+* PV and battery engineering formulas
+* solar resource calculations
+* PV temperature calculations
+* solar-specific derating
+* solar engineering assumptions
+* domain constants
+* solar standards references
+* structured solar warnings
+* solar calculation trace construction
+
+It should remain:
+
+* deterministic
+* side-effect free
+* reusable
+* explicit about inputs and outputs
+* independent of UI, API, database, and network infrastructure
+
+---
+
+## Directory Structure
+
+```text
+src/shared/
+├── assumptions/
+│   ├── engineering-assumptions.ts
+│   ├── default-assumptions.ts
+│   └── index.ts
+│
+├── constants/
+│   ├── battery.ts
+│   ├── cable.ts
+│   ├── electrical.ts
+│   ├── inverter.ts
+│   ├── protection.ts
+│   ├── pv.ts
+│   └── index.ts
+│
+├── derating/
+│   ├── cable-derating.ts
+│   ├── inverter-derating.ts
+│   ├── pv-derating.ts
+│   └── index.ts
+│
+├── formulas/
+│   ├── battery-energy.ts
+│   ├── current.ts
+│   ├── energy.ts
+│   ├── ohms-law.ts
+│   ├── power.ts
+│   ├── pv-power.ts
+│   ├── resistance.ts
+│   ├── voltage-drop.ts
+│   └── index.ts
+│
+├── irradiance/
+│   ├── peak-sun-hours.ts
+│   ├── production-ratio.ts
+│   └── index.ts
+│
+├── standards/
+│   ├── iec.ts
+│   ├── ieee.ts
+│   ├── nec.ts
+│   ├── nigeria.ts
+│   └── index.ts
+│
+├── temperature/
+│   ├── cell-temperature.ts
+│   ├── temperature-coefficient.ts
+│   ├── vmpp-adjustment.ts
+│   ├── voc-adjustment.ts
+│   └── index.ts
+│
+├── traces/
+│   ├── create-trace.ts
+│   ├── trace-step.ts
+│   └── index.ts
+│
+├── warnings/
+│   ├── create-warning.ts
+│   ├── warning-codes.ts
+│   ├── warning-severity.ts
+│   └── index.ts
+│
+└── index.ts
+```
+
+---
+
+# Modules
+
+## `assumptions`
+
+Contains explicit engineering assumptions used by solar calculations.
+
+Examples include:
+
+* peak sun hours
+* PV performance ratio
+* inverter efficiency
+* battery efficiency
+* battery depth of discharge
+* cable-loss allowance
+* design margins
+* ambient temperature
+* minimum and maximum design temperatures
+
+Assumptions should always be explicit and overridable by the domain calculation where appropriate.
+
+```ts
+import {
+  DEFAULT_SOLAR_ENGINEERING_ASSUMPTIONS,
+  resolveSolarEngineeringAssumptions,
+} from "../shared";
+
+const assumptions = resolveSolarEngineeringAssumptions({
+  peakSunHours: 5.5,
+  performanceRatio: 0.78,
+});
+```
+
+Percentage-like values in this layer use decimal ratios:
+
+```text
+1.00 = 100%
+0.95 = 95%
+0.75 = 75%
+0.50 = 50%
+```
+
+The generic percentage/unit model belongs to `@ogwusearch/engineering-units`.
+
+---
+
+## `constants`
+
+Contains stable domain constants used by solar engineering calculations.
+
+Examples:
+
+* standard battery voltages
+* conductor resistivity
+* standard cable sizes
+* electrical system voltages
+* inverter efficiency limits
+* PV reference irradiance
+* protection factors
+
+Constants should describe engineering reference values rather than calculation results.
+
+Avoid putting application configuration or customer-specific values here.
+
+---
+
+## `formulas`
+
+Contains pure mathematical relationships used throughout `solar-engine`.
+
+Examples:
+
+```text
+P = V × I
+
+E = P × t
+
+V = I × R
+
+P_loss = I² × R
+
+P_PV = E_daily / (PSH × PR)
+
+E_battery = Ah × V
+```
+
+Formula functions should:
+
+* accept explicit inputs
+* return deterministic outputs
+* avoid mutation
+* avoid network/database/UI dependencies
+* avoid hidden assumptions
+
+Validation of whether inputs are acceptable belongs to the validation/domain layer.
+
+---
+
+## `derating`
+
+Contains functions that adjust ideal engineering values for real-world conditions.
+
+Examples:
+
+* PV temperature derating
+* PV soiling loss
+* PV wiring loss
+* PV mismatch loss
+* PV shading loss
+* inverter temperature derating
+* inverter altitude derating
+* cable grouping derating
+* cable installation derating
+
+The shared derating layer performs the mathematical adjustment.
+
+The domain module decides **which derating factors apply** to a particular engineering calculation.
+
+---
+
+## `irradiance`
+
+Contains solar-resource calculations.
+
+Examples:
+
+* peak sun hours
+* daily irradiation
+* incident solar energy
+* production ratio
+
+The distinction is:
+
+```text
+irradiance/
+    solar resource
+         │
+         ▼
+formulas/
+    mathematical relationships
+         │
+         ▼
+derating/
+    real-world losses
+         │
+         ▼
+pv/
+    system-specific engineering calculation
+```
+
+Peak sun hours represent the equivalent full-reference-irradiance duration derived from solar irradiation.
+
+---
+
+## `temperature`
+
+Contains PV temperature calculations and temperature-dependent electrical adjustments.
+
+Examples:
+
+* cell temperature
+* temperature rise
+* temperature coefficient conversion
+* temperature-adjusted `Voc`
+* temperature-adjusted `Vmpp`
+
+The standard PV reference temperature used by these helpers is typically:
+
+```text
+25 °C
+```
+
+Temperature coefficients are represented internally as fractional change per degree Celsius:
+
+```text
+-0.0035 / °C = -0.35 % / °C
+```
+
+Example:
+
+```ts
+const hotVoc = calculateVocAtTemperature(
+  49.5,
+  -0.0029,
+  70,
+);
+```
+
+The `temperature` layer provides the mathematics. PV-string and PV-array modules remain responsible for applying the result to actual system limits.
+
+---
+
+## `standards`
+
+Contains references to engineering standards relevant to solar calculations.
+
+Current reference groups include:
+
+```text
+IEC
+IEEE
+NEC
+Nigeria / NERC
+```
+
+This layer stores identifiers and reference metadata.
+
+It does **not** attempt to reproduce complete standards or regulatory documents.
+
+Examples:
+
+```ts
+import {
+  IEC_STANDARDS,
+  IEEE_STANDARDS,
+  NEC_ARTICLES,
+  NIGERIA_STANDARDS,
+} from "../shared";
+
+const pvArrayStandard = IEC_STANDARDS.PV_ARRAY_DESIGN.code;
+const derStandard = IEEE_STANDARDS.DER_INTERCONNECTION.code;
+const necArticle = NEC_ARTICLES.PHOTOVOLTAIC_SYSTEMS.code;
+const nigeriaReference = NIGERIA_STANDARDS.NESIS.code;
+```
+
+Standards references should support domain validation and documentation without turning `solar-engine` into a copy of external standards.
+
+---
+
+## `warnings`
+
+Provides structured solar-engineering warnings.
+
+Warnings are advisory conditions and are distinct from blocking validation errors.
+
+Typical warning categories include:
+
+* high voltage drop
+* low voltage margin
+* high inverter utilization
+* low battery autonomy
+* high battery depth of discharge
+* PV string voltage margin
+* high temperature
+* high controller utilization
+* standards-review requirements
+
+Example:
+
+```ts
+import {
+  WARNING_CODES,
+  createWarning,
+} from "../shared";
+
+const warning = createWarning({
+  code: WARNING_CODES.HIGH_VOLTAGE_DROP,
+  severity: "medium",
+  message:
+    "Calculated voltage drop exceeds the recommended design limit.",
+  category: "voltage-drop",
+  source: "pv-string",
+});
+```
+
+Warnings should remain structured so they can later be included in generic `CalculationResult` contracts.
+
+---
+
+## `traces`
+
+Provides deterministic solar calculation trace construction.
+
+A trace records how a calculation was produced.
+
+A trace step can contain:
+
+* step ID
+* description
+* category
+* formula
+* inputs
+* outputs
+* assumptions
+* explanatory notes
+
+Example:
+
+```ts
+import {
+  addTraceStep,
+  createTrace,
+} from "../shared";
+
+let trace = createTrace({
+  id: "pv-sizing-001",
+  calculation: "pv-sizing",
+  assumptions: [
+    "Peak sun hours = 5 h/day",
+    "Performance ratio = 0.75",
+  ],
+});
+
+trace = addTraceStep(trace, {
+  id: "required-pv-power",
+  description: "Calculate required PV power",
+  formula: "Ppv = Eday / (PSH × PR)",
+  inputs: [
+    {
+      name: "dailyEnergy",
+      value: 6000,
+      unit: "Wh/day",
+    },
+    {
+      name: "peakSunHours",
+      value: 5,
+      unit: "h/day",
+    },
+    {
+      name: "performanceRatio",
+      value: 0.75,
+    },
+  ],
+  outputs: [
+    {
+      name: "requiredPvPower",
+      value: 1600,
+      unit: "W",
+    },
+  ],
+});
+```
+
+Traces should describe calculations; they should not become an alternative calculation engine.
+
+---
+
+# Public Shared API
+
+The shared barrel is:
+
+```text
+src/shared/index.ts
+```
+
+It exports the intentional shared API:
+
+```ts
+export * from "./assumptions";
+export * from "./constants";
+export * from "./derating";
+export * from "./formulas";
+export * from "./irradiance";
+export * from "./standards";
+export * from "./temperature";
+export * from "./traces";
+export * from "./warnings";
+```
+
+Domain modules should normally import shared functionality through this boundary:
+
+```ts
+import {
+  calculateDcPowerW,
+  calculatePeakSunHours,
+  calculateCellTemperatureC,
+  createWarning,
+  createTrace,
+} from "../shared";
+```
+
+---
+
+# Architectural Boundaries
+
+`solar-engine/shared` is a **domain-shared layer**.
+
+It depends on the generic engineering foundation where appropriate:
+
+```text
+@ogwusearch/engineering-types
+@ogwusearch/engineering-units
+@ogwusearch/engineering-validation
+@ogwusearch/engineering-core
+                 │
+                 ▼
+       @ogwusearch/solar-engine
+                 │
+                 ▼
+          solar/shared/*
+```
+
+The dependency direction must never be reversed.
+
+The foundation packages must not import anything from:
+
+```text
+solar-engine
+solar-engine/shared
+```
+
+---
+
+# What Does Not Belong Here
+
+Do not put the following into `shared`:
+
+* complete PV-sizing workflows
+* complete battery-sizing workflows
+* application-specific business rules
+* API controllers
+* database access
+* network calls
+* UI logic
+* report rendering
+* customer-specific configuration
+* orchestration of complete calculations
+* duplicated generic validation infrastructure
+* duplicated generic unit conversion infrastructure
+
+For example:
+
+```text
+shared/formulas
+    ✅ P = V × I
+
+pv/sizing
+    ✅ determine required PV array size
+
+engineering-validation
+    ✅ validate required numeric input
+
+shared
+    ❌ duplicate required-number validation
+```
+
+---
+
+# Relationship With Domain Modules
+
+Shared utilities are consumed by domain modules such as:
+
+```text
+load/
+energy/
+peak-demand/
+pv/
+battery/
+inverter/
+charge-controller/
+cable/
+voltage-drop/
+protection/
+earthing/
+generator/
+bom/
+costing/
+system-validation/
+reports/
+```
+
+Typical dependency flow:
+
+```text
+                     solar-engine
+                          │
+             ┌────────────┴────────────┐
+             ▼                         ▼
+          shared                  domain modules
+             │                         │
+     ┌───────┼────────┐                │
+     ▼       ▼        ▼                │
+ formulas  temperature derating        │
+     │       │        │                │
+     └───────┴────────┴────────────────┘
+                          │
+                          ▼
+                  domain calculation
+                          │
+                          ▼
+                    validation
+                          │
+                          ▼
+                       result
+                          │
+                    ┌─────┴─────┐
+                    ▼           ▼
+                 warnings      trace
+```
+
+---
+
+# Design Rules
+
+### 1. Keep calculations deterministic
+
+The same inputs should produce the same engineering result.
+
+Do not depend on:
+
+* current time
+* randomness
+* network state
+* database state
+* global mutable state
+
+### 2. Keep assumptions explicit
+
+Do not hide engineering assumptions inside formulas.
+
+Prefer:
+
+```ts
+calculateRequiredPvPowerW(
+  dailyEnergyWh,
+  peakSunHours,
+  performanceRatio,
+);
+```
+
+over a formula that silently assumes a particular performance ratio.
+
+### 3. Separate mathematics from validation
+
+A formula should calculate.
+
+Validation should determine whether the inputs are acceptable.
+
+For example:
+
+```text
+formula
+    calculateVoltageDrop(...)
+         │
+         ▼
+validation
+    is voltage drop acceptable?
+```
+
+### 4. Preserve traceability
+
+Important domain calculations should be able to expose:
+
+* formula used
+* input values
+* output values
+* assumptions
+* warnings
+* trace steps
+
+### 5. Avoid duplication
+
+When functionality is generic across engineering domains, it belongs in the foundation packages.
+
+When functionality is specifically solar engineering, it may belong in `solar-engine/shared`.
+
+---
+
+# Usage Pattern
+
+A typical domain calculation should follow this conceptual flow:
+
+```text
+Input
+  │
+  ▼
+Domain validation
+  │
+  ▼
+Shared formulas / utilities
+  │
+  ▼
+Domain calculation
+  │
+  ├── shared/derating
+  ├── shared/temperature
+  ├── shared/irradiance
+  ├── shared/assumptions
+  │
+  ▼
+Warnings
+  │
+  ▼
+Trace
+  │
+  ▼
+Engineering result
+```
+
+`engineering-core` remains responsible for generic execution/orchestration. `solar-engine` remains responsible for solar-specific mathematics and domain behavior.
+
+---
+
+# Maintenance
+
+When adding a new shared utility:
+
+1. Determine whether it is genuinely reusable across multiple solar modules.
+2. Put it in the most specific existing shared category.
+3. Keep the implementation pure and deterministic.
+4. Add tests for normal, boundary, and invalid behavior where applicable.
+5. Export it intentionally through the appropriate `index.ts`.
+6. Avoid adding a new abstraction when an existing shared utility already covers the requirement.
+7. Keep generic engineering infrastructure in the foundation packages.
+
+The shared layer should remain a **small, stable toolkit**, not become a dumping ground for unrelated solar-engine code.
