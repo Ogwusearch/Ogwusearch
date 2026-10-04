@@ -1,0 +1,37 @@
+.ui-container {
+  width: 100%;
+  margin-inline: auto;
+  padding-inline: var(--page-padding);
+}
+
+.ui-container--sm {
+  max-width: var(--container-sm);
+}
+
+.ui-container--md {
+  max-width: var(--container-md);
+}
+
+.ui-container--lg {
+  max-width: var(--container-lg);
+}
+
+.ui-container--xl {
+  max-width: var(--container-xl);
+}
+
+.ui-container--2xl {
+  max-width: var(--container-2xl);
+}
+
+@media (min-width: 768px) {
+  .ui-container {
+    --page-padding: 2rem;
+  }
+}
+
+@media (min-width: 1200px) {
+  .ui-container {
+    --page-padding: 2.5rem;
+  }
+}

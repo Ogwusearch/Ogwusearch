@@ -68,12 +68,19 @@ For each project determine:
 
 ```text
 Purpose
+
 Current State
+
 Technology
+
 Working?
+
 Incomplete?
+
 Dependencies
+
 Future Value
+
 Action
 ```
 
@@ -81,10 +88,15 @@ Possible actions:
 
 ```text
 ACTIVE
+
 PAUSED
+
 ARCHIVE
+
 EXPERIMENT
+
 INTEGRATE
+
 FINISH
 ```
 
@@ -118,19 +130,19 @@ Reason for selection:
 
 ```text
 Software
-+
+    +
 Electrical Engineering
-+
+    +
 Calculations
-+
+    +
 Validation
-+
+    +
 Reports
-+
+    +
 Real-world workflow
-+
+    +
 Potential MCP integration
-+
+    +
 Potential AI integration
 ```
 
@@ -190,18 +202,23 @@ Phase 01 is complete when:
 
 # CURRENT PRIORITY
 
-## DO NOT:
+## DO NOT
 
 ```text
 Start another major project
+
 Change frameworks unnecessarily
+
 Build the MCP server yet
+
 Build the AI assistant yet
+
 Create another portfolio
+
 Rewrite everything
 ```
 
-## DO:
+## DO
 
 ```text
 Finish Foundation
@@ -231,13 +248,15 @@ Only then begin the SolarAudit Engine.
 
 ## STATUS
 
-**Phase:** 01 — Foundation
-**Primary Project:** Ogwusearch Engineering
-**Current Objective:** Establish the Engineering Operating System
-**Immediate Next Action:** Finish Foundation Documents
-**Following Action:** Audit Existing Projects
-**Flagship Candidate:** SolarAudit
-**Future Integration:** MCP → AI Engineering Assistant
+| Item                      | Current Status                             |
+| ------------------------- | ------------------------------------------ |
+| **Phase**                 | 01 — Foundation                            |
+| **Primary Project**       | Ogwusearch Engineering                     |
+| **Current Objective**     | Establish the Engineering Operating System |
+| **Immediate Next Action** | Finish Foundation Documents                |
+| **Following Action**      | Audit Existing Projects                    |
+| **Flagship Candidate**    | SolarAudit                                 |
+| **Future Integration**    | MCP → AI Engineering Assistant             |
 
 ---
 

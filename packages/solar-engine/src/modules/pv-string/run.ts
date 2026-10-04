@@ -1,4 +1,5 @@
 import {
+  defineCalculation,
   executeCalculation,
 } from "@ogwusearch/engineering-core";
 
@@ -23,19 +24,28 @@ import {
   calculatePvString,
 } from "./calculation/index.js";
 
+const pvStringCalculation =
+  defineCalculation<
+    PvStringInput,
+    PvStringOutput
+  >({
+    name: "pv-string",
+
+    validate:
+      validatePvStringIssues,
+
+    assumptions:
+      createPvStringAssumptions,
+
+    calculate:
+      calculatePvString,
+  });
+
 export function runPvString(
   input: PvStringInput,
 ): CalculationResult<PvStringOutput> {
-  return executeCalculation<
-    PvStringInput,
-    PvStringOutput
-  >(
-    {
-      name: "pv-string",
-      validate: validatePvStringIssues,
-      assumptions: createPvStringAssumptions,
-      calculate: calculatePvString,
-    },
+  return executeCalculation(
+    pvStringCalculation,
     input,
   );
 }

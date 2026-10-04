@@ -1,6 +1,6 @@
 # PROJECT REGISTRY
 
-## OGWUSEARCH ENGINEERING
+# OGWUSEARCH ENGINEERING
 
 **Purpose:** Master registry of all software, engineering, AI, electronics, and experimental projects.
 
@@ -26,7 +26,7 @@ Projects use these statuses:
 
 # 02 — PROJECT PRIORITY
 
-Priority is based on current strategic importance:
+Priority describes current strategic importance and workflow focus.
 
 ```text
 P0 — Current Focus
@@ -56,7 +56,7 @@ Priority can change during project reviews.
 | APP-001 | BoardCapital             | Software               | ACTIVE     | P2       |
 | APP-002 | MineCore                 | Software / Mining      | ACTIVE     | P2       |
 
-**Note:** Status and priority above are registry starting points. They should be confirmed during the Project Audit.
+> **Note:** Status and priority are registry starting points. They should be confirmed during the Project Audit.
 
 ---
 
@@ -82,6 +82,7 @@ Offline solar-system auditing, sizing, configuration, costing, and reporting sys
 
 ```text
 Dashboard
+
 Load Audit
 Energy Analysis
 Solar Sizing
@@ -93,7 +94,9 @@ Voltage Drop
 Protection
 Earthing
 Generator Sizing
+
 System Configuration
+
 BOM
 Costing
 Reports
@@ -119,7 +122,7 @@ AI Engineering Assistant
 
 ## Current Action
 
-**Finish Foundation → Audit existing implementation → Begin Engine work.**
+**Finish Foundation → Audit Existing Implementation → Begin Engine Work**
 
 ---
 
@@ -142,6 +145,7 @@ Canvas-based interface
 
 ```text
 Components
+
 ├── Resistor
 ├── Capacitor
 ├── Inductor
@@ -151,8 +155,11 @@ Components
 ├── Current Source
 ├── Ground
 └── Switch
+```
 
+```text
 Simulation
+
 ├── Circuit construction
 ├── Connections
 ├── Component properties
@@ -166,7 +173,7 @@ Engineering tool within the broader ecosystem.
 
 ## Current Action
 
-Audit current implementation before further expansion.
+**Audit current implementation before further expansion.**
 
 ---
 
@@ -180,6 +187,7 @@ Long-term unified environment for engineering applications and tools.
 
 ```text
 Engineering Platform
+
 │
 ├── Projects
 ├── Calculators
@@ -196,9 +204,9 @@ Engineering Platform
 
 ## Current Action
 
-Do not build yet.
+**Do not build yet.**
 
-Define architecture only after core projects mature.
+Define architecture only after the core engineering projects mature.
 
 ---
 
@@ -212,11 +220,11 @@ Natural-language interface for engineering software and tools.
 
 ```text
 User
- ↓
+  ↓
 AI Assistant
- ↓
+  ↓
 Engineering Tools
- ↓
+  ↓
 Validated Results
 ```
 
@@ -236,7 +244,7 @@ Validated Results
 
 ## Dependency
 
-Requires mature engineering tools.
+Engineering tools and deterministic calculation engines must mature before the assistant becomes a primary system.
 
 ---
 
@@ -264,13 +272,17 @@ Engineering Engines
 calculate_load
 calculate_energy
 calculate_peak_demand
+
 size_pv
 size_battery
 size_inverter
 size_charge_controller
 size_cable
+
 calculate_voltage_drop
+
 validate_system
+
 generate_bom
 generate_report
 ```
@@ -281,7 +293,7 @@ generate_report
 
 ## Dependency
 
-Engineering capabilities must exist before they are exposed through MCP.
+Engineering capabilities must exist and be validated before they are exposed through MCP.
 
 ---
 
@@ -307,9 +319,13 @@ Evaluate whether it should become:
 
 ```text
 Standalone Tool
-        OR
+
+      OR
+
 SolarAudit Module
-        OR
+
+      OR
+
 Shared Engineering Package
 ```
 
@@ -331,7 +347,7 @@ Capacitance
 Inductance
 Voltage Divider
 Current
-Component calculations
+Component Calculations
 ```
 
 ## Current Status
@@ -446,8 +462,8 @@ Organizations
 Operations
 Projects
 Assets
-Mining data
-Financial data
+Mining Data
+Financial Data
 Reports
 ```
 
@@ -468,22 +484,36 @@ Potential future platform patterns may be reusable, but MineCore remains its own
 The intended engineering ecosystem:
 
 ```text
-                     OGWUSEARCH
-                     ENGINEERING
-                          │
-              ┌───────────┴───────────┐
-              │                       │
-        ENGINEERING TOOLS        AI SYSTEMS
-              │                       │
-       ┌──────┼──────┐          ┌─────┴─────┐
-       │      │      │          │           │
-   SolarAudit Circuit  Notes   MCP       AI Assistant
-       │    Simulator
-       │
-       └──────────────┐
-                      │
-              Engineering Engine
+                         OGWUSEARCH
+                         ENGINEERING
+                              │
+                ┌─────────────┴─────────────┐
+                │                           │
+        ENGINEERING TOOLS              AI SYSTEMS
+                │                           │
+        ┌───────┼────────┐             ┌────┴────┐
+        │       │        │             │         │
+   SolarAudit Circuit  Notes          MCP    AI Assistant
+              Simulator
+        │
+        │
+        ▼
+ Engineering Engine
 ```
+
+The architectural principle is:
+
+```text
+Deterministic Engineering
+          ↓
+Engineering Services
+          ↓
+MCP / External Interfaces
+          ↓
+AI Assistance
+```
+
+AI should orchestrate and explain validated engineering capabilities rather than replace the underlying engineering logic.
 
 ---
 
@@ -525,6 +555,7 @@ Every project must eventually have:
 
 ```text
 Project:
+
 ID:
 
 Purpose:
@@ -558,6 +589,8 @@ Recommended Action:
 Next Concrete Task:
 ```
 
+The audit should be based on the actual state of the project, not assumptions from the registry.
+
 ---
 
 # 18 — PROJECT REVIEW
@@ -568,13 +601,13 @@ During review:
 
 ```text
 KEEP
- ↓
+  ↓
 IMPROVE
- ↓
+  ↓
 INTEGRATE
- ↓
+  ↓
 PAUSE
- ↓
+  ↓
 ARCHIVE
 ```
 
@@ -584,23 +617,31 @@ Archiving a project is a valid engineering decision.
 
 ---
 
-# 19 — CURRENT REGISTRY PRIORITY
+# 19 — CURRENT REGISTRY WORKFLOW
 
 At the current foundation stage:
 
 ```text
 1. OGWUSEARCH ENGINEERING FOUNDATION
+        ↓
 2. PROJECT AUDIT
+        ↓
 3. SOLARAUDIT
+        ↓
 4. ENGINEERING NOTES
+        ↓
 5. CIRCUIT SIMULATOR
+        ↓
 6. ENGINEERING MCP
+        ↓
 7. AI ENGINEERING ASSISTANT
+        ↓
 8. ENGINEERING PLATFORM
+        ↓
 9. OTHER PROJECTS
 ```
 
-This ordering describes the current workflow, not a permanent ranking of the projects.
+This describes the current workflow, not a permanent ranking of projects.
 
 ---
 
@@ -608,7 +649,7 @@ This ordering describes the current workflow, not a permanent ranking of the pro
 
 The registry is not complete until the existing projects have been audited.
 
-## Next step
+## Next Step
 
 For every project:
 

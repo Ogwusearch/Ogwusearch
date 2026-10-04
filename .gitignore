@@ -44,3 +44,16 @@ temp/
 *.pdf
 **/dist/
 **/*.tsbuildinfo
+# Package artifacts
+*.tgz
+*.prepublish-backup
+
+# TypeScript build cache
+*.tsbuildinfo
+
+# Package/project build output
+**/dist/
+**/build/
+
+# Nested dependencies
+**/node_modules/

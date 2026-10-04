@@ -1,0 +1,92 @@
+.ui-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+
+  min-height: 40px;
+  padding: 0 var(--space-4);
+
+  border: var(--border-width) solid transparent;
+  border-radius: var(--radius-md);
+
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  line-height: 1;
+
+  cursor: pointer;
+
+  transition:
+    background-color var(--transition-normal),
+    border-color var(--transition-normal),
+    color var(--transition-normal),
+    transform var(--transition-fast);
+}
+
+.ui-button:hover {
+  transform: translateY(-1px);
+}
+
+.ui-button:active {
+  transform: translateY(0);
+}
+
+/* ----------------------------------------
+   Primary
+---------------------------------------- */
+
+.ui-button--primary {
+  background: var(--color-accent);
+  color: var(--color-background);
+}
+
+.ui-button--primary:hover {
+  background: var(--color-accent-hover);
+}
+
+/* ----------------------------------------
+   Secondary
+---------------------------------------- */
+
+.ui-button--secondary {
+  background: var(--color-surface);
+  border-color: var(--color-border);
+  color: var(--color-text);
+}
+
+.ui-button--secondary:hover {
+  background: var(--color-surface-hover);
+  border-color: var(--color-accent);
+}
+
+/* ----------------------------------------
+   Ghost
+---------------------------------------- */
+
+.ui-button--ghost {
+  background: transparent;
+  color: var(--color-text-muted);
+}
+
+.ui-button--ghost:hover {
+  background: var(--color-surface);
+  color: var(--color-text);
+}
+
+/* ----------------------------------------
+   Full width
+---------------------------------------- */
+
+.ui-button--full {
+  width: 100%;
+}
+
+/* ----------------------------------------
+   Disabled
+---------------------------------------- */
+
+.ui-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}

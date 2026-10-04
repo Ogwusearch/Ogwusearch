@@ -1,0 +1,21 @@
+.ui-section {
+  width: 100%;
+}
+
+.ui-section--sm {
+  padding-block: var(--space-5);
+}
+
+.ui-section--md {
+  padding-block: var(--space-7);
+}
+
+.ui-section--lg {
+  padding-block: var(--space-9);
+}
+
+@media (max-width: 767px) {
+  .ui-section--lg {
+    padding-block: var(--space-7);
+  }
+}

@@ -1,7 +1,14 @@
+import {
+  defineCalculation,
+  executeCalculation,
+} from "@ogwusearch/engineering-core";
+
+import type {
+  CalculationExecutionContext,
+} from "@ogwusearch/engineering-core";
+
 import type {
   CalculationResult,
-  EngineeringError,
-  EngineeringIssue,
   EngineeringWarning,
 } from "@ogwusearch/engineering-types";
 
@@ -28,47 +35,9 @@ import {
   validateEarthing,
 } from "./validation/index.js";
 
-function toEngineeringErrors(
-  issues: EngineeringIssue[],
-): EngineeringError[] {
-  return issues
-    .filter(
-      (issue) =>
-        issue.severity === "ERROR",
-    )
-    .map((issue) => ({
-      code: issue.code,
-      message: issue.message,
-      severity: "ERROR" as const,
-
-      ...(issue.path !== undefined && {
-        path: issue.path,
-      }),
-
-      ...(issue.expected !== undefined && {
-        expected: issue.expected,
-      }),
-
-      ...(issue.actual !== undefined && {
-        actual: issue.actual,
-      }),
-
-      ...(issue.metadata !== undefined && {
-        metadata: issue.metadata,
-      }),
-    }));
-}
-
-function createModuleMetadata() {
-  return {
-    extras: {
-      module:
-        "@ogwusearch/solar-engine/earthing",
-    },
-  };
-}
 function calculate(
   input: EarthingInput,
+  context: CalculationExecutionContext,
 ): EarthingOutput {
   const requiredEarthConductorAreaMm2 =
     calculateEarthConductorArea(input);
@@ -92,7 +61,7 @@ function calculate(
       : earthResistanceOhm <=
         earthResistanceTargetOhm;
 
-  return {
+  const output: EarthingOutput = {
     mode: input.mode,
 
     faultCurrentA:
@@ -124,145 +93,117 @@ function calculate(
       earthResistanceOhm,
     }),
 
-    ...(earthResistanceTargetOhm !==
-      undefined && {
+    ...(earthResistanceTargetOhm !== undefined && {
       earthResistanceTargetOhm,
     }),
 
     compatibility: {
-      ...(earthResistanceCompatible !==
-        undefined && {
+      ...(earthResistanceCompatible !== undefined && {
         earthResistanceCompatible,
       }),
     },
   };
+
+  /*
+   * Preserve the existing Earthing trace exactly.
+   *
+   * createEarthingTrace() already contains the complete
+   * four-step Earthing trace. The generic execution context
+   * owns the trace collection.
+   */
+  for (const step of createEarthingTrace(input, output)) {
+    context.trace.add(step);
+  }
+
+  return output;
 }
+
+function createEarthingWarnings(
+  _input: EarthingInput,
+  output: EarthingOutput,
+): EngineeringWarning[] {
+  if (
+    output.compatibility.earthResistanceCompatible !== false
+  ) {
+    return [];
+  }
+
+  return [
+    {
+      code:
+        "EARTH_RESISTANCE_TARGET_EXCEEDED",
+
+      message:
+        "Calculated earth resistance exceeds the supplied earth-resistance target.",
+
+      severity: "WARNING",
+
+      path:
+        "design.earthResistanceTargetOhm",
+
+      metadata: {
+        extras: {
+          calculated:
+            output.earthResistanceOhm,
+
+          target:
+            output.earthResistanceTargetOhm,
+        },
+      },
+    },
+  ];
+}
+
+const earthingCalculation =
+  defineCalculation<
+    EarthingInput,
+    EarthingOutput
+  >({
+    name: "earthing-sizing",
+
+    validate(input) {
+      return validateEarthing(input);
+    },
+
+    assumptions(input) {
+      return createEarthingAssumptions(input);
+    },
+
+    calculate,
+
+    warnings:
+      createEarthingWarnings,
+  });
+
 /**
- * Thin earthing lifecycle wrapper.
+ * Executes the Earthing sizing calculation through
+ * the canonical engineering-core lifecycle.
  *
- * Generic lifecycle orchestration belongs to
- * engineering-core. This module owns only the
- * earthing-specific validation, calculation,
- * assumptions, trace, and warnings.
+ * Lifecycle:
+ *
+ * validate
+ *      ↓
+ * assumptions
+ *      ↓
+ * calculate
+ *      ↓
+ * warnings
+ *      ↓
+ * CalculationResult
  */
 export function runEarthingSizing(
   input: EarthingInput,
 ): CalculationResult<EarthingOutput> {
-  const validationIssues =
-    validateEarthing(input);
-
-  const errors =
-    toEngineeringErrors(
-      validationIssues,
-    );
-
-  if (errors.length > 0) {
-    return {
-      status: "ERROR",
-      valid: false,
-      errors,
-      warnings: [],
-      assumptions: [],
-      trace: {
-        steps: [],
-      },
-      metadata:
-        createModuleMetadata(),
-    };
-  }
-
-  try {
-    const output =
-      calculate(input);
-
-    const assumptions =
-      createEarthingAssumptions(input);
-
-    const traceSteps =
-      createEarthingTrace(
-        input,
-        output,
-      );
-
-    const warnings:
-      EngineeringWarning[] = [];
-
-    if (
-      output.compatibility
-        .earthResistanceCompatible === false
-    ) {
-      warnings.push({
-        code:
-          "EARTH_RESISTANCE_TARGET_EXCEEDED",
-        message:
-          "Calculated earth resistance exceeds the supplied earth-resistance target.",
-        severity: "WARNING",
-        path:
-          "design.earthResistanceTargetOhm",
-        metadata: {
-          extras: {
-            calculated:
-              output.earthResistanceOhm,
-            target:
-              output.earthResistanceTargetOhm,
-          },
+  return executeCalculation(
+    earthingCalculation,
+    input,
+    {
+      metadata: {
+        extras: {
+          module:
+            "@ogwusearch/solar-engine/earthing",
         },
-      });
-    }
-
-    return {
-      status:
-        warnings.length > 0
-          ? "WARNING"
-          : "SUCCESS",
-
-      valid: true,
-
-      value: output,
-
-      errors: [],
-
-      warnings,
-
-      assumptions,
-
-      trace: {
-        steps: traceSteps,
       },
-
-      metadata:
-        createModuleMetadata(),
-    };
-  } catch (error) {
-    const calculationError:
-      EngineeringError = {
-        code:
-          "EARTHING_CALCULATION_ERROR",
-        message:
-          error instanceof Error
-            ? error.message
-            : "Earthing calculation failed.",
-        severity: "ERROR",
-        metadata: {
-          extras: {
-            cause: error,
-          },
-        },
-      };
-
-    return {
-      status: "ERROR",
-      valid: false,
-      errors: [
-        calculationError,
-      ],
-      warnings: [],
-      assumptions: [],
-      trace: {
-        steps: [],
-      },
-      metadata:
-        createModuleMetadata(),
-    };
-  }
+    },
+  );
 }

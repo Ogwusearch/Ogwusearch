@@ -12,7 +12,7 @@
     "rootDir": "src",
     "outDir": "dist",
     "composite": true,
-    "tsBuildInfoFile": "./dist/tsconfig.tsbuildinfo",
+    "tsBuildInfoFile": "./tsconfig.tsbuildinfo",
     "noEmitOnError": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,

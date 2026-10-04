@@ -1,7 +1,8 @@
 {
   "name": "@ogwusearch/solar-engine",
   "version": "0.1.0",
-  "private": true,
+  "description": "Domain-specific solar engineering calculations and validation built on the Ogwusearch Engineering foundation.",
+  "license": "MIT",
   "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -11,6 +12,11 @@
       "import": "./dist/index.js"
     }
   },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
   "scripts": {
     "build": "tsc -p tsconfig.json",
     "typecheck": "tsc -b tsconfig.json",
@@ -26,5 +32,13 @@
   "devDependencies": {
     "typescript": "^5.0.0",
     "vitest": "^5.0.1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Ogwusearch/Ogwusearch.git",
+    "directory": "packages/solar-engine"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }

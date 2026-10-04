@@ -1,6 +1,6 @@
-# DECISION LOG
+# OGWUSEARCH ENGINEERING
 
-## OGWUSEARCH ENGINEERING
+# DECISION LOG
 
 **Purpose:** Record important technical, architectural, project, and workflow decisions.
 
@@ -8,7 +8,7 @@
 
 ---
 
-# DECISION RECORD FORMAT
+## Decision Record Format
 
 Every important decision should contain:
 
@@ -26,160 +26,171 @@ Status
 
 ---
 
-# DECISIONS
+# Decisions
 
 ## DEC-001 — Establish Ogwusearch Engineering as the Parent Ecosystem
 
 **Date:** 2026-09-19
 
-**Decision:**
+### Decision
 
-Create **Ogwusearch Engineering** as the organizing ecosystem for my engineering, software, AI, and technical projects.
+Create **Ogwusearch Engineering** as the organizing ecosystem for engineering, software, AI, and technical projects.
 
-**Context:**
+### Context
 
-I have multiple projects covering software engineering, solar engineering, electronics, AI, simulation, and business applications.
+Multiple projects cover software engineering, solar engineering, electronics, AI, simulation, and business applications.
 
 Without an organizing structure, projects can become isolated or repeatedly rebuilt.
 
-**Options Considered:**
+### Options Considered
 
 1. Keep every project completely independent.
 2. Create a single large application containing everything.
 3. Create an engineering ecosystem containing independent projects with shared standards and future integrations.
 
-**Chosen Direction:**
+### Chosen Direction
 
-Option 3.
+**Option 3.**
 
 Projects remain independently maintainable while following common engineering standards and potentially sharing reusable components and services.
 
-**Reason:**
+### Reason
 
 This allows experimentation without forcing unrelated applications into one codebase while still providing a long-term direction.
 
-**Consequences:**
+### Consequences
 
 ```text
 Ogwusearch Engineering
-        │
-        ├── SolarAudit
-        ├── Circuit Simulator
-        ├── Engineering Platform
-        ├── AI Engineering Assistant
-        ├── Engineering Tools
-        └── MCP Services
+        |
+        +-- SolarAudit
+        +-- Circuit Simulator
+        +-- Engineering Platform
+        +-- AI Engineering Assistant
+        +-- Engineering Tools
+        +-- MCP Services
 ```
 
-**Status:** ACTIVE
+**Status:** `ACTIVE`
 
 ---
 
-# DEC-002 — Create a Personal Engineering Playbook
+## DEC-002 — Create a Personal Engineering Playbook
 
 **Date:** 2026-09-19
 
-**Decision:**
+### Decision
 
 Maintain a personal engineering operating document called:
 
 `OGWUSEARCH_ENGINEERING_PLAYBOOK.md`
 
-**Context:**
+### Context
 
 Multiple projects require consistent rules for architecture, testing, documentation, prioritization, and development.
 
-**Chosen Direction:**
+### Chosen Direction
 
 Use the Playbook as the top-level set of personal engineering rules.
 
-**Reason:**
+### Reason
 
-Project-specific documentation should describe individual systems. The Playbook describes how I build systems.
+Project-specific documentation should describe individual systems. The Playbook describes how systems are built and maintained.
 
-**Status:** ACTIVE
+**Status:** `ACTIVE`
 
 ---
 
-# DEC-003 — Use a Phase-Based Development Strategy
+## DEC-003 — Use a Phase-Based Development Strategy
 
 **Date:** 2026-09-19
 
-**Decision:**
+### Decision
 
 Major initiatives will be developed through defined phases.
 
-**Direction:**
+### Direction
 
 ```text
 Foundation
-    ↓
+    |
+    v
 Core Engine
-    ↓
+    |
+    v
 Application
-    ↓
+    |
+    v
 Testing
-    ↓
+    |
+    v
 Reports
-    ↓
+    |
+    v
 Integration
-    ↓
+    |
+    v
 AI / MCP
-    ↓
+    |
+    v
 Deployment
 ```
 
-**Reason:**
+### Reason
 
 This reduces uncontrolled expansion and creates measurable milestones.
 
-**Status:** ACTIVE
+**Status:** `ACTIVE`
 
 ---
 
-# DEC-004 — Finish Existing Work Before Starting Major New Projects
+## DEC-004 — Finish Existing Work Before Starting Major New Projects
 
 **Date:** 2026-09-19
 
-**Decision:**
+### Decision
 
 New ideas go into a backlog unless they have a clear reason to interrupt the current priority.
 
-**Reason:**
+### Reason
 
 A large number of unfinished projects makes it difficult to demonstrate completed capability.
 
-**Rule:**
+### Rule
 
 ```text
-Existing priority
-      ↓
-Finish milestone
-      ↓
+Existing Priority
+      |
+      v
+Finish Milestone
+      |
+      v
 Test
-      ↓
+      |
+      v
 Document
-      ↓
-Then expand
+      |
+      v
+Then Expand
 ```
 
-**Status:** ACTIVE
+**Status:** `ACTIVE`
 
 ---
 
-# DEC-005 — Audit Existing Projects Before Selecting the Flagship
+## DEC-005 — Audit Existing Projects Before Selecting the Flagship
 
 **Date:** 2026-09-19
 
-**Decision:**
+### Decision
 
 Complete a project audit before permanently selecting the flagship project.
 
-**Reason:**
+### Reason
 
-The current workspace contains multiple related and overlapping projects. The audit should identify duplication, unfinished work, experiments, and projects worth integrating.
+The workspace contains multiple related and potentially overlapping projects. The audit should identify duplication, unfinished work, experiments, and projects worth integrating.
 
-**Required Classification:**
+### Required Classification
 
 ```text
 ACTIVE
@@ -190,19 +201,19 @@ INTEGRATE
 FINISH
 ```
 
-**Status:** PENDING
+**Status:** `PENDING`
 
 ---
 
-# DEC-006 — SolarAudit Is the Current Flagship Candidate
+## DEC-006 — SolarAudit Is the Current Flagship Candidate
 
 **Date:** 2026-09-19
 
-**Decision:**
+### Decision
 
 Treat **SolarAudit** as the current flagship candidate, subject to completion of the project audit.
 
-**Reason:**
+### Reason
 
 SolarAudit combines:
 
@@ -215,35 +226,38 @@ SolarAudit combines:
 * Potential MCP integration
 * Potential AI integration
 
-**Important:**
+### Important
 
 This is a project-direction decision, not a requirement to abandon other projects.
 
-**Status:** PROVISIONAL
+**Status:** `PROVISIONAL`
 
 ---
 
-# DEC-007 — Separate Engineering Calculations From the UI
+## DEC-007 — Separate Engineering Calculations From the UI
 
 **Date:** 2026-09-19
 
-**Decision:**
+### Decision
 
 Engineering calculations must remain independent from the user interface.
 
-**Architecture:**
+### Architecture
 
 ```text
 UI
- ↓
+ |
+ v
 Application Layer
- ↓
+ |
+ v
 Engineering Engine
- ↓
+ |
+ v
 Validation
 ```
 
-**Reason:**
+### Reason
 
 The same calculation engine should eventually be usable by:
 
@@ -254,65 +268,68 @@ The same calculation engine should eventually be usable by:
 * Automated tests
 * Reports
 
-**Status:** ACTIVE
+**Status:** `ACTIVE`
 
 ---
 
-# DEC-008 — Deterministic Engineering Calculations
+## DEC-008 — Deterministic Engineering Calculations
 
 **Date:** 2026-09-19
 
-**Decision:**
+### Decision
 
 Important engineering calculations should be deterministic and testable.
 
-**Reason:**
+### Reason
 
 The same valid input should produce a predictable result.
 
 AI may assist with interaction and explanation but should not silently replace deterministic calculation logic.
 
-**Status:** ACTIVE
+**Status:** `ACTIVE`
 
 ---
 
-# DEC-009 — MCP Comes After the Core Engineering System
+## DEC-009 — MCP Comes After the Core Engineering System
 
 **Date:** 2026-09-19
 
-**Decision:**
+### Decision
 
 MCP will be introduced after useful engineering capabilities exist.
 
-**Architecture:**
+### Architecture
 
 ```text
 Engineering Engine
-       ↓
+       |
+       v
 Engineering Services
-       ↓
+       |
+       v
 MCP Server
-       ↓
+       |
+       v
 AI Client
 ```
 
-**Reason:**
+### Reason
 
 MCP should expose useful capabilities rather than become the foundation of an unfinished system.
 
-**Status:** PLANNED
+**Status:** `PLANNED`
 
 ---
 
-# DEC-010 — AI Is an Interface to Engineering Capabilities
+## DEC-010 — AI Is an Interface to Engineering Capabilities
 
 **Date:** 2026-09-19
 
-**Decision:**
+### Decision
 
 The AI Engineering Assistant will interact with validated engineering capabilities rather than independently inventing engineering results.
 
-**AI Responsibilities:**
+### AI Responsibilities
 
 * Explain
 * Orchestrate
@@ -321,22 +338,22 @@ The AI Engineering Assistant will interact with validated engineering capabiliti
 * Call engineering tools
 * Help generate documentation
 
-**Engineering Engine Responsibilities:**
+### Engineering Engine Responsibilities
 
 * Calculate
 * Validate
 * Apply defined formulas
 * Produce structured results
 
-**Status:** PLANNED
+**Status:** `PLANNED`
 
 ---
 
-# DEC-011 — Use Explicit Units
+## DEC-011 — Use Explicit Units
 
 **Date:** 2026-09-19
 
-**Decision:**
+### Decision
 
 Engineering quantities must carry explicit units.
 
@@ -356,115 +373,127 @@ m
 Hz
 ```
 
-**Reason:**
+### Reason
 
 Unit ambiguity is a major source of engineering errors.
 
-**Status:** ACTIVE
+**Status:** `ACTIVE`
 
 ---
 
-# DEC-012 — Engineering Results Must Be Traceable
+## DEC-012 — Engineering Results Must Be Traceable
 
 **Date:** 2026-09-19
 
-**Decision:**
+### Decision
 
 Important results should be traceable through:
 
 ```text
 Input
- ↓
+  |
+  v
 Assumptions
- ↓
+  |
+  v
 Formula
- ↓
+  |
+  v
 Calculation
- ↓
+  |
+  v
 Result
- ↓
+  |
+  v
 Validation
 ```
 
-**Reason:**
+### Reason
 
 A user should be able to understand where an important result came from.
 
-**Status:** ACTIVE
+**Status:** `ACTIVE`
 
 ---
 
-# DEC-013 — Testing Is Part of Engineering
+## DEC-013 — Testing Is Part of Engineering
 
 **Date:** 2026-09-19
 
-**Decision:**
+### Decision
 
 Engineering calculations require dedicated tests and known expected results.
 
-**Testing Layers:**
+### Testing Layers
 
 ```text
 Unit
- ↓
+  |
+  v
 Integration
- ↓
+  |
+  v
 Engineering Test Cases
- ↓
+  |
+  v
 System
- ↓
+  |
+  v
 User Workflow
 ```
 
-**Status:** ACTIVE
+**Status:** `ACTIVE`
 
 ---
 
-# DEC-014 — Technology Must Serve the Problem
+## DEC-014 — Technology Must Serve the Problem
 
 **Date:** 2026-09-19
 
-**Decision:**
+### Decision
 
 Technology choices must be justified by project requirements.
 
-**Rule:**
+### Rule
 
 Do not change frameworks, databases, languages, or architectures simply because another technology is interesting or popular.
 
-**Status:** ACTIVE
+**Status:** `ACTIVE`
 
 ---
 
-# DEC-015 — Experiments Are Separate From Products
+## DEC-015 — Experiments Are Separate From Products
 
 **Date:** 2026-09-19
 
-**Decision:**
+### Decision
 
 Experimental work belongs in an experiment area until it proves useful enough to become part of a project.
 
-**Flow:**
+### Flow
 
 ```text
 Experiment
-    ↓
+    |
+    v
 Learn
-    ↓
+    |
+    v
 Evaluate
-    ↓
-Promote if valuable
+    |
+    v
+Promote if Valuable
 ```
 
-**Status:** ACTIVE
+**Status:** `ACTIVE`
 
 ---
 
-# DEC-016 — Maintain a Single Current Focus
+## DEC-016 — Maintain a Single Current Focus
 
 **Date:** 2026-09-19
 
-**Decision:**
+### Decision
 
 Maintain one primary active objective at a time.
 
@@ -472,21 +501,21 @@ The current focus is maintained in:
 
 `CURRENT_FOCUS.md`
 
-**Reason:**
+### Reason
 
 This provides a single answer to:
 
 > "What am I working on right now?"
 
-**Status:** ACTIVE
+**Status:** `ACTIVE`
 
 ---
 
-# DEC-017 — Maintain a Project Registry
+## DEC-017 — Maintain a Project Registry
 
 **Date:** 2026-09-19
 
-**Decision:**
+### Decision
 
 All significant projects should be listed in:
 
@@ -494,15 +523,15 @@ All significant projects should be listed in:
 
 Each project should have a defined state and purpose.
 
-**Status:** ACTIVE
+**Status:** `ACTIVE`
 
 ---
 
-# DEC-018 — Maintain a Backlog Instead of Interrupting Work
+## DEC-018 — Maintain a Backlog Instead of Interrupting Work
 
 **Date:** 2026-09-19
 
-**Decision:**
+### Decision
 
 New ideas are captured in:
 
@@ -510,19 +539,19 @@ New ideas are captured in:
 
 They do not automatically change the current focus.
 
-**Reason:**
+### Reason
 
 Ideas should be preserved without allowing them to continuously interrupt execution.
 
-**Status:** ACTIVE
+**Status:** `ACTIVE`
 
 ---
 
-# DEC-019 — Documentation Is Part of Completion
+## DEC-019 — Documentation Is Part of Completion
 
 **Date:** 2026-09-19
 
-**Decision:**
+### Decision
 
 A project is not considered complete simply because it runs.
 
@@ -535,103 +564,113 @@ A finished project should include appropriate:
 * Engineering assumptions
 * Usage examples
 
-**Status:** ACTIVE
+**Status:** `ACTIVE`
 
 ---
 
-# DEC-020 — Current Strategic Direction
+## DEC-020 — Current Strategic Direction
 
 **Date:** 2026-09-19
 
-**Decision:**
+### Decision
 
 The current long-term sequence is:
 
 ```text
 OGWUSEARCH ENGINEERING
-        ↓
+        |
+        v
 Foundation
-        ↓
+        |
+        v
 Project Audit
-        ↓
+        |
+        v
 SolarAudit Engine
-        ↓
+        |
+        v
 SolarAudit Application
-        ↓
+        |
+        v
 Testing & Validation
-        ↓
+        |
+        v
 Reports
-        ↓
+        |
+        v
 Engineering MCP
-        ↓
+        |
+        v
 AI Engineering Assistant
-        ↓
+        |
+        v
 Additional Engineering Tools
-        ↓
+        |
+        v
 Unified Engineering Platform
-        ↓
+        |
+        v
 Public Engineering Presence
 ```
 
-**Status:** ACTIVE
+**Status:** `ACTIVE`
 
 ---
 
-# DECISION STATUS DEFINITIONS
+# Decision Status Definitions
 
-## PROPOSED
-
-Idea under consideration.
-
-## PENDING
-
-Decision requires additional information or a prerequisite.
-
-## ACTIVE
-
-Currently governs the system.
-
-## PROVISIONAL
-
-Current direction but subject to review.
-
-## SUPERSEDED
-
-A newer decision replaced it.
-
-## ARCHIVED
-
-No longer relevant but retained for historical context.
+| Status        | Meaning                                                    |
+| ------------- | ---------------------------------------------------------- |
+| `PROPOSED`    | Idea under consideration                                   |
+| `PENDING`     | Decision requires additional information or a prerequisite |
+| `ACTIVE`      | Currently governs the system                               |
+| `PROVISIONAL` | Current direction but subject to review                    |
+| `SUPERSEDED`  | A newer decision replaced it                               |
+| `ARCHIVED`    | No longer relevant but retained for historical context     |
 
 ---
 
-# HOW TO ADD A DECISION
+# How to Add a Decision
 
-Use:
+Use the following template:
 
-```text
+```markdown
 ## DEC-XXX — Decision Title
 
-Date:
+**Date:** YYYY-MM-DD
 
-Decision:
+### Decision
 
-Context:
+Describe the decision.
 
-Options Considered:
+### Context
 
-Chosen Direction:
+Explain why the decision was necessary.
 
-Reason:
+### Options Considered
 
-Consequences:
+1. Option A
+2. Option B
+3. Option C
 
-Status:
+### Chosen Direction
+
+Describe the selected direction.
+
+### Reason
+
+Explain why.
+
+### Consequences
+
+Describe important consequences.
+
+**Status:** `ACTIVE`
 ```
 
 ---
 
-# DECISION RULE
+# Decision Rule
 
 Before making a major architectural or strategic change, check this document first.
 
@@ -643,12 +682,14 @@ If the new decision conflicts with an existing active decision:
 4. Mark the previous decision `SUPERSEDED`.
 5. Update the relevant project documentation.
 
+Do not silently rewrite history.
+
 ---
 
-# FINAL PRINCIPLE
+# Final Principle
 
 > **Decisions should be deliberate, documented, and reversible when practical.**
 
 The purpose of this document is not to prevent change.
 
-It is to make sure I know **why I changed direction**.
+It is to make sure we know **why direction changed**.

@@ -5,6 +5,7 @@
 **Version:** 1.0
 **Status:** Active
 **Owner:** Ogwusearch
+
 **Purpose:** Define the long-term direction, phases, priorities, and completion criteria for the Ogwusearch Engineering ecosystem.
 
 ---
@@ -57,16 +58,18 @@ The long-term ecosystem:
              ┌────────────────┼────────────────┐
              │                │                │
              ▼                ▼                ▼
-        SolarAudit       Circuit Tools       MCP
+         SolarAudit      Circuit Tools        MCP
              │                │                │
              └────────────────┼────────────────┘
                               │
                               ▼
-                   AI ENGINEERING ASSISTANT
+                  AI ENGINEERING ASSISTANT
                               │
                               ▼
                    ENGINEERING PLATFORM
 ```
+
+The architecture should evolve from **reliable engineering foundations** toward applications, integration, and AI.
 
 ---
 
@@ -74,7 +77,7 @@ The long-term ecosystem:
 
 All work follows the:
 
-**OGWUSEARCH ENGINEERING PLAYBOOK**
+## OGWUSEARCH ENGINEERING PLAYBOOK
 
 Core principles:
 
@@ -172,11 +175,11 @@ Documentation
 
 # PHASE 01 — FOUNDATION
 
-### Objective
+## Objective
 
 Create the operating system for the entire ecosystem.
 
-### Work
+## Work
 
 ```text
 Playbook
@@ -190,11 +193,11 @@ Architecture
 Standards
 ```
 
-### Outcome
+## Outcome
 
 A controlled development environment where every project has a purpose and place.
 
-### Status
+## Status
 
 **IN PROGRESS**
 
@@ -202,54 +205,71 @@ A controlled development environment where every project has a purpose and place
 
 # PHASE 02 — SOLARAUDIT ENGINE
 
-### Objective
+## Objective
 
 Build the deterministic engineering calculation core.
 
-### Modules
+## Modules
 
 ```text
 01 Load Audit
+
 02 Energy Analysis
+
 03 Solar Sizing
+
 04 PV Array
+
 05 PV String
+
 06 Battery Sizing
+
 07 Inverter Sizing
+
 08 Charge Controller
+
 09 DC Cable Sizing
+
 10 AC Cable Sizing
+
 11 Voltage Drop
+
 12 Protection
+
 13 Earthing
+
 14 Generator Sizing
+
 15 System Configuration
+
 16 System Validation
+
 17 BOM
+
 18 Costing
 ```
 
-### Architecture
+## Architecture
 
 ```text
 Input
- ↓
+  ↓
 Validation
- ↓
+  ↓
 Calculation
- ↓
+  ↓
 Result
- ↓
+  ↓
 Validation
- ↓
+  ↓
 Traceability
 ```
 
-### Outcome
+## Outcome
 
 A reusable SolarAudit engineering engine independent of the UI.
 
-### Status
+## Status
 
 **NOT STARTED**
 
@@ -257,37 +277,37 @@ A reusable SolarAudit engineering engine independent of the UI.
 
 # PHASE 03 — SOLARAUDIT APPLICATION
 
-### Objective
+## Objective
 
 Build the complete application around the engineering engine.
 
-### Workflow
+## Workflow
 
 ```text
 Customer
- ↓
+  ↓
 Site
- ↓
+  ↓
 Project
- ↓
+  ↓
 Audit
- ↓
+  ↓
 Loads
- ↓
+  ↓
 Energy Analysis
- ↓
+  ↓
 System Design
- ↓
+  ↓
 Validation
- ↓
+  ↓
 BOM
- ↓
+  ↓
 Costing
- ↓
+  ↓
 Report
 ```
 
-### Requirements
+## Requirements
 
 * Offline operation
 * Local persistence
@@ -297,11 +317,11 @@ Report
 * Project management
 * Report generation
 
-### Outcome
+## Outcome
 
 A usable solar engineering application.
 
-### Status
+## Status
 
 **NOT STARTED**
 
@@ -309,27 +329,29 @@ A usable solar engineering application.
 
 # PHASE 04 — VALIDATION & TESTING
 
-### Objective
+## Objective
 
 Prove that the system works correctly.
 
-### Testing layers
+## Testing Layers
 
 ```text
 Unit Tests
- ↓
+    ↓
 Calculation Tests
- ↓
+    ↓
 Integration Tests
- ↓
+    ↓
 Engineering Test Cases
- ↓
+    ↓
 System Tests
- ↓
+    ↓
 Regression Tests
 ```
 
-### Every important calculation requires:
+## Engineering Test Contract
+
+Every important calculation requires:
 
 ```text
 Known Input
@@ -339,11 +361,11 @@ Tolerance
 PASS / FAIL
 ```
 
-### Outcome
+## Outcome
 
 A trustworthy engineering calculation system.
 
-### Status
+## Status
 
 **NOT STARTED**
 
@@ -351,14 +373,15 @@ A trustworthy engineering calculation system.
 
 # PHASE 05 — REPORTS & DOCUMENTATION
 
-### Objective
+## Objective
 
 Turn engineering calculations into professional, traceable output.
 
-### Reports
+## Reports
 
 ```text
 Executive Summary
+
 Load Audit
 Energy Analysis
 PV Design
@@ -367,13 +390,15 @@ Inverter Design
 Cable Design
 Protection
 Validation
+
 BOM
 Costing
+
 Assumptions
 Calculation Traceability
 ```
 
-### Documentation
+## Documentation
 
 Document:
 
@@ -385,11 +410,11 @@ Document:
 * test cases
 * architecture
 
-### Outcome
+## Outcome
 
 Professional engineering reports and technical documentation.
 
-### Status
+## Status
 
 **NOT STARTED**
 
@@ -397,11 +422,11 @@ Professional engineering reports and technical documentation.
 
 # PHASE 06 — ENGINEERING MCP
 
-### Objective
+## Objective
 
 Expose engineering capabilities through Model Context Protocol.
 
-### Architecture
+## Architecture
 
 ```text
 AI Client
@@ -413,29 +438,34 @@ Engineering Services
 Engineering Engines
 ```
 
-### Initial tools
+## Initial Tools
 
 ```text
 calculate_load
 calculate_energy
 calculate_peak_demand
+
 size_pv
 size_battery
 size_inverter
 size_charge_controller
 size_cable
+
 calculate_voltage_drop
+
 size_protection
+
 validate_system
+
 generate_bom
 generate_report
 ```
 
-### Outcome
+## Outcome
 
 AI clients can interact with the engineering system through structured tools.
 
-### Status
+## Status
 
 **NOT STARTED**
 
@@ -443,27 +473,27 @@ AI clients can interact with the engineering system through structured tools.
 
 # PHASE 07 — AI ENGINEERING ASSISTANT
 
-### Objective
+## Objective
 
 Create a natural-language interface over the engineering ecosystem.
 
-### Architecture
+## Architecture
 
 ```text
 User
- ↓
+  ↓
 AI Assistant
- ↓
+  ↓
 MCP
- ↓
+  ↓
 Engineering Tools
- ↓
+  ↓
 Validated Results
- ↓
+  ↓
 Explanation
 ```
 
-### Capabilities
+## Capabilities
 
 The assistant should eventually be able to:
 
@@ -478,15 +508,17 @@ The assistant should eventually be able to:
 * create reports
 * interact with multiple engineering tools
 
-### Critical rule
+## Critical Rule
 
-AI does not replace deterministic engineering calculations.
+**AI does not replace deterministic engineering calculations.**
 
-### Outcome
+AI operates above validated engineering capabilities.
+
+## Outcome
 
 An AI interface to the engineering platform.
 
-### Status
+## Status
 
 **NOT STARTED**
 
@@ -494,7 +526,7 @@ An AI interface to the engineering platform.
 
 # PHASE 08 — ENGINEERING TOOLS
 
-### Objective
+## Objective
 
 Connect mature engineering projects into the ecosystem.
 
@@ -509,17 +541,17 @@ Engineering Notes
 Engineering Platform
 ```
 
-### Rule
+## Rule
 
 A project must be sufficiently mature before integration.
 
 Do not integrate unfinished experiments simply to increase project count.
 
-### Outcome
+## Outcome
 
 A collection of connected engineering capabilities.
 
-### Status
+## Status
 
 **NOT STARTED**
 
@@ -527,11 +559,11 @@ A collection of connected engineering capabilities.
 
 # PHASE 09 — UNIFIED ENGINEERING PLATFORM
 
-### Objective
+## Objective
 
 Create the platform layer connecting the ecosystem.
 
-### Platform capabilities
+## Platform Capabilities
 
 ```text
 Projects
@@ -546,30 +578,30 @@ AI
 MCP
 ```
 
-### Architecture
+## Architecture
 
 ```text
                          PLATFORM
                             │
-        ┌───────────────────┼───────────────────┐
-        │                   │                   │
-        ▼                   ▼                   ▼
-    SolarAudit        Circuit Tools       Engineering Tools
-        │                   │                   │
-        └───────────────────┼───────────────────┘
+          ┌─────────────────┼─────────────────┐
+          │                 │                 │
+          ▼                 ▼                 ▼
+      SolarAudit       Circuit Tools    Engineering Tools
+          │                 │                 │
+          └─────────────────┼─────────────────┘
                             │
-                       Shared Services
+                     Shared Services
                             │
-                      ┌─────┴─────┐
-                      ▼           ▼
-                    MCP           AI
+                       ┌────┴────┐
+                       ▼         ▼
+                      MCP       AI
 ```
 
-### Outcome
+## Outcome
 
 A unified engineering ecosystem.
 
-### Status
+## Status
 
 **NOT STARTED**
 
@@ -577,11 +609,11 @@ A unified engineering ecosystem.
 
 # PHASE 10 — PUBLIC ENGINEERING PRESENCE
 
-### Objective
+## Objective
 
 Turn completed work into a public technical body of work.
 
-### Public structure
+## Public Structure
 
 ```text
 Ogwusearch Engineering
@@ -596,31 +628,33 @@ Ogwusearch Engineering
 └── GitHub
 ```
 
-### Every flagship project should communicate:
+## Flagship Project Communication
+
+Every flagship project should communicate:
 
 ```text
 Problem
- ↓
+  ↓
 Requirements
- ↓
+  ↓
 Architecture
- ↓
+  ↓
 Engineering
- ↓
+  ↓
 Implementation
- ↓
+  ↓
 Testing
- ↓
+  ↓
 Results
- ↓
+  ↓
 Lessons
 ```
 
-### Outcome
+## Outcome
 
 A public demonstration of engineering and software capability.
 
-### Status
+## Status
 
 **NOT STARTED**
 
@@ -694,12 +728,19 @@ When deciding what to work on:
 
 ```text
 1. Critical broken functionality
+        ↓
 2. Current phase milestone
+        ↓
 3. Core product functionality
+        ↓
 4. Validation
+        ↓
 5. Documentation
+        ↓
 6. Integration
+        ↓
 7. Improvements
+        ↓
 8. New ideas
 ```
 
@@ -713,14 +754,23 @@ A major feature is not complete until:
 
 ```text
 [ ] Requirements understood
+
 [ ] Architecture defined
+
 [ ] Implementation complete
+
 [ ] Error handling implemented
+
 [ ] Tests written
+
 [ ] Validation completed
+
 [ ] Documentation updated
+
 [ ] README updated
+
 [ ] Example available
+
 [ ] Changes committed
 ```
 
@@ -728,10 +778,15 @@ For engineering calculations additionally:
 
 ```text
 [ ] Units verified
+
 [ ] Assumptions documented
+
 [ ] Formula documented
+
 [ ] Expected results defined
+
 [ ] Boundary conditions tested
+
 [ ] Result traceable
 ```
 
@@ -745,16 +800,23 @@ For engineering calculations additionally:
 PHASE 01 — FOUNDATION
 ```
 
-### Current tasks
+## Current Tasks
 
 ```text
 1. Finish foundation documents
+
 2. Audit existing projects
+
 3. Build project registry
+
 4. Classify projects
+
 5. Identify duplicates
+
 6. Identify projects to archive
+
 7. Confirm flagship
+
 8. Define SolarAudit Engine
 ```
 
@@ -764,19 +826,27 @@ PHASE 01 — FOUNDATION
 
 The next milestone is:
 
-## FOUNDATION COMPLETE
+# FOUNDATION COMPLETE
 
 Required:
 
 ```text
 [ ] Playbook
+
 [ ] Master Plan
+
 [ ] Project Registry
+
 [ ] Decision Log
+
 [ ] Backlog
+
 [ ] Current Focus
+
 [ ] Changelog
+
 [ ] Architecture
+
 [ ] Standards
 ```
 
@@ -784,6 +854,7 @@ After completion:
 
 ```text
 PHASE 02
+
 SOLARAUDIT ENGINE
 ```
 
@@ -821,7 +892,7 @@ Do not reverse this order without a documented reason.
 
 # 12 — SUCCESS CRITERIA
 
-The ecosystem is successful when it demonstrates that I can:
+The ecosystem is successful when it demonstrates the ability to:
 
 ```text
 Understand a real problem
@@ -840,7 +911,7 @@ Test the system
         ↓
 Generate useful output
         ↓
-Expose capabilities through APIs/MCP
+Expose capabilities through APIs / MCP
         ↓
 Integrate AI appropriately
         ↓
@@ -857,23 +928,23 @@ Document the complete system
 
 # 14 — MASTER RULE
 
-## ONE SYSTEM AT A TIME.
+# ONE SYSTEM AT A TIME.
 
 ```text
 Focus
- ↓
+  ↓
 Build
- ↓
+  ↓
 Test
- ↓
+  ↓
 Validate
- ↓
+  ↓
 Document
- ↓
+  ↓
 Finish
- ↓
+  ↓
 Integrate
- ↓
+  ↓
 Expand
 ```
 
@@ -883,8 +954,14 @@ A large system is created by connecting **finished, reliable components**.
 
 ---
 
-**MASTER PLAN VERSION:** 1.0
-**CURRENT PHASE:** 01 — Foundation
-**CURRENT FOCUS:** Establish Engineering Operating System
-**NEXT MAJOR PROJECT:** SolarAudit Engine
-**FUTURE INTEGRATION:** MCP → AI Engineering Assistant → Unified Engineering Platform
+# MASTER PLAN CONTROL
+
+**Master Plan Version:** 1.0
+
+**Current Phase:** 01 — Foundation
+
+**Current Focus:** Establish Engineering Operating System
+
+**Next Major Project:** SolarAudit Engine
+
+**Future Integration:** MCP → AI Engineering Assistant → Unified Engineering Platform

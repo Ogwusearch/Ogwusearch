@@ -1,7 +1,8 @@
 {
   "name": "@ogwusearch/engineering-units",
   "version": "0.1.0",
-  "private": true,
+  "description": "Physical dimensions, units, quantities, and deterministic unit conversion infrastructure for Ogwusearch Engineering.",
+  "license": "MIT",
   "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -12,7 +13,9 @@
     }
   },
   "files": [
-    "dist"
+    "dist",
+    "README.md",
+    "LICENSE"
   ],
   "scripts": {
     "build": "tsc -p tsconfig.json",
@@ -25,5 +28,13 @@
   "devDependencies": {
     "typescript": "^5.9.3",
     "vitest": "^5.0.1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Ogwusearch/Ogwusearch.git",
+    "directory": "packages/engineering-units"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }
