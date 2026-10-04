@@ -176,6 +176,35 @@ describe("calculateLoadAudit", () => {
     ).toBe(1250);
   });
 
+  it("does not use efficiency to alter running load", () => {
+    const input: LoadAuditInput = {
+      loads: [
+        createLoad({
+          quantity: 2,
+          ratedPowerW: 1000,
+          efficiency: 0.8,
+          operatingHoursPerDay: 1,
+        }),
+      ],
+      designMargin: 0,
+    };
+
+    const result =
+      calculateLoadAudit(input);
+
+    expect(
+      result.loads[0]?.connectedLoadW,
+    ).toBe(2000);
+
+    expect(
+      result.loads[0]?.runningLoadW,
+    ).toBe(2000);
+
+    expect(
+      result.dailyEnergyWh,
+    ).toBe(2000);
+  });
+
   it("calculates multiple loads independently", () => {
     const input: LoadAuditInput = {
       loads: [
