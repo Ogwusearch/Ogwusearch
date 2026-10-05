@@ -1,6 +1,11 @@
+
 import {
-  executeCalculation,
   defineCalculation,
+  executeCalculation,
+} from "@ogwusearch/engineering-core";
+
+import type {
+  CalculationExecutionContext,
 } from "@ogwusearch/engineering-core";
 
 import type {
@@ -25,14 +30,39 @@ import {
   createEnergyAssumptions,
 } from "./assumptions/index.js";
 
+import {
+  createEnergyTrace,
+} from "./trace/index.js";
+
 // ============================================================
-// Energy Analysis Runner
+// Energy Analysis Calculation
 // ============================================================
 
-export function runEnergyAnalysis(
+function calculate(
   input: EnergyInput,
-): CalculationResult<EnergyOutput> {
-  const definition = defineCalculation<
+  context: CalculationExecutionContext,
+): EnergyOutput {
+  const output = calculateEnergy(input);
+
+  /*
+   * Energy owns the domain-specific trace.
+   *
+   * engineering-core owns trace lifecycle and collection.
+   * createEnergyTrace() owns the Energy-specific trace steps.
+   */
+  for (const step of createEnergyTrace(input, output)) {
+    context.trace.add(step);
+  }
+
+  return output;
+}
+
+// ============================================================
+// Energy Analysis Definition
+// ============================================================
+
+const energyCalculation =
+  defineCalculation<
     EnergyInput,
     EnergyOutput
   >({
@@ -50,11 +80,26 @@ export function runEnergyAnalysis(
         value.designMargin ?? 0,
       ),
 
-    calculate: calculateEnergy,
+    calculate,
   });
 
+// ============================================================
+// Energy Analysis Runner
+// ============================================================
+
+export function runEnergyAnalysis(
+  input: EnergyInput,
+): CalculationResult<EnergyOutput> {
   return executeCalculation(
-    definition,
+    energyCalculation,
     input,
+    {
+      metadata: {
+        extras: {
+          module:
+            "@ogwusearch/solar-engine/energy",
+        },
+      },
+    },
   );
 }
