@@ -150,31 +150,6 @@ function validateLoad(
     }
   }
 
-  if (load.powerFactor !== undefined) {
-    if (!isFiniteNumber(load.powerFactor)) {
-      issues.push(
-        invalid(
-          "INVALID_POWER_FACTOR",
-          "Power factor must be a finite number.",
-          `${path}.powerFactor`,
-          load.powerFactor,
-        ),
-      );
-    } else if (
-      load.powerFactor <= 0 ||
-      load.powerFactor > 1
-    ) {
-      issues.push(
-        invalid(
-          "INVALID_POWER_FACTOR",
-          "Power factor must be greater than 0 and less than or equal to 1.",
-          `${path}.powerFactor`,
-          load.powerFactor,
-        ),
-      );
-    }
-  }
-
   return issues;
 }
 

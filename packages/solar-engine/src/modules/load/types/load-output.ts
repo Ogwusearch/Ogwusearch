@@ -12,7 +12,8 @@ export interface LoadResult {
   readonly connectedLoadW: number;
 
   /**
-   * Operating/running electrical load after efficiency.
+   * Operating/running electrical load used by downstream
+   * demand and energy calculations.
    */
   readonly runningLoadW: number;
 
@@ -32,7 +33,7 @@ export interface LoadAuditOutput {
   /**
    * Normal coincident demand returned by Peak Demand.
    */
-  readonly totalDemandLoadW: number;
+  readonly normalCoincidentDemandW: number;
 
   readonly totalApparentPowerVA: number;
 

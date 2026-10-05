@@ -4,7 +4,6 @@ export interface PeakDemandLoadInput {
   readonly demandFactor?: number;
   readonly startingPowerW?: number;
   readonly surgeFactor?: number;
-  readonly powerFactor?: number;
 }
 
 export interface PeakDemandInput {

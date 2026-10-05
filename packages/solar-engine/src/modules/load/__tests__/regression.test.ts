@@ -63,7 +63,7 @@ describe("Load Audit regression cases", () => {
     ).toBe(2460);
 
     expect(
-      result.value?.totalDemandLoadW,
+      result.value?.normalCoincidentDemandW,
     ).toBe(330);
 
     expect(

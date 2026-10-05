@@ -124,7 +124,7 @@ describe("calculateLoadAudit", () => {
       ).toBe(1500);
 
       expect(
-        result.totalDemandLoadW,
+        result.normalCoincidentDemandW,
       ).toBe(1200);
 
       expect(
@@ -238,7 +238,7 @@ describe("calculateLoadAudit", () => {
     ).toBe(1120);
 
     expect(
-      result.totalDemandLoadW,
+      result.normalCoincidentDemandW,
     ).toBe(200);
 
     expect(

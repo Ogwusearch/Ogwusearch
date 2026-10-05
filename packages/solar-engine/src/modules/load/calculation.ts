@@ -133,7 +133,7 @@ export function calculateLoadAudit(
 
     totalRunningLoadW,
 
-    totalDemandLoadW:
+    normalCoincidentDemandW:
       peakDemand.normalCoincidentDemandW,
 
     totalApparentPowerVA,
