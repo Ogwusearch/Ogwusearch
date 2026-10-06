@@ -1,7 +1,7 @@
 import type {
   LoadCategory,
   LoadPhase,
-} from "@ogwusearch/solar-engine";
+} from "@ogwusearch/load-engine";
 
 import type { SolarAuditLoad } from "../../domain/load.js";
 import type { LoadRepository } from "../../persistence/index.js";

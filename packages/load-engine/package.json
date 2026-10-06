@@ -1,0 +1,33 @@
+{
+  "name": "@ogwusearch/load-engine",
+  "version": "0.1.0",
+  "description": "Deterministic load analysis and load audit engineering engine.",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "scripts": {
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "build": "tsc -p tsconfig.json",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@ogwusearch/engineering-core": "workspace:*",
+    "@ogwusearch/engineering-types": "workspace:*",
+    "@ogwusearch/engineering-units": "workspace:*",
+    "@ogwusearch/engineering-validation": "workspace:*"
+  },
+  "devDependencies": {
+    "vitest": "^3.2.4",
+    "typescript": "^5.8.3"
+  }
+}

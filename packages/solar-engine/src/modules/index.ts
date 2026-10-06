@@ -12,8 +12,6 @@ export * from "./pv-array/index.js";
 
 export * from "./pv-string/index.js";
 
-export * from "./battery/index.js";
-
 export * from "./inverter/index.js";
 
 export * from "./charge-controller/index.js";

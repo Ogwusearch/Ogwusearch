@@ -1,12 +1,12 @@
 import type {
   Load,
-} from "@ogwusearch/solar-engine";
+} from "@ogwusearch/load-engine";
 
 /**
  * Application-owned project load.
  *
- * The engineering load contract remains owned by
- * solar-engine. SolarAudit adds project ownership metadata.
+ * The engineering load contract is owned by
+ * load-engine. SolarAudit adds project ownership metadata.
  */
 export interface SolarAuditLoad extends Load {
   readonly projectId: string;

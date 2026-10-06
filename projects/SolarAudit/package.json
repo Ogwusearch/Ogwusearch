@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "@ogwusearch/engineering-types": "workspace:*",
+    "@ogwusearch/load-engine": "workspace:*",
     "@ogwusearch/solar-engine": "workspace:*"
   },
   "devDependencies": {

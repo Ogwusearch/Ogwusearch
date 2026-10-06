@@ -1,7 +1,7 @@
 import type {
   LoadAuditInput,
   LoadAuditOutput,
-} from "@ogwusearch/solar-engine";
+} from "@ogwusearch/load-engine";
 
 import type { CalculationResult } from "@ogwusearch/engineering-types";
 

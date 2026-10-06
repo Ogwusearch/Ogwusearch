@@ -1,5 +1,8 @@
 import {
   runLoadAudit,
+} from "@ogwusearch/load-engine";
+
+import {
   runEnergyAnalysis,
   runPeakDemand,
 } from "@ogwusearch/solar-engine";
@@ -7,11 +10,14 @@ import {
 import type {
   EnergyInput,
   EnergyOutput,
-  LoadAuditInput,
-  LoadAuditOutput,
   PeakDemandInput,
   PeakDemandOutput,
 } from "@ogwusearch/solar-engine";
+
+import type {
+  LoadAuditInput,
+  LoadAuditOutput,
+} from "@ogwusearch/load-engine";
 
 import type { CalculationResult } from "@ogwusearch/engineering-types";
 
