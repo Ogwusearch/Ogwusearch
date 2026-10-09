@@ -3,6 +3,7 @@ import {
   type WorkspaceSnapshot,
 } from "./workspace";
 
+import { bindLoadCalculator, renderLoadCalculator } from "./load-calculator";
 import "./styles.css";
 
 let workspace: WorkspaceSnapshot | null = null;
@@ -1597,61 +1598,16 @@ function renderCalculationsPage(): string {
     <section class="page">
       <div class="page-header">
         <div>
-          <span class="eyebrow">
-            ENGINEERING CORE
-          </span>
-
-          <h1>
-            Calculations
-          </h1>
-
+          <span class="eyebrow">ENGINEERING CORE</span>
+          <h1>Calculations</h1>
           <p>
-            Calculation registry integration will consume real
-            calculation results without duplicating formulas.
+            Run calculations through the existing Ogwusearch
+            engineering calculation engines.
           </p>
         </div>
       </div>
 
-      <section class="panel table-panel">
-        <div class="panel-header">
-          <div>
-            <span class="panel-kicker">
-              RESULT REGISTRY
-            </span>
-
-            <h2>
-              Calculations
-            </h2>
-          </div>
-
-          <div class="search-inline">
-            ${icon("search")}
-
-            <input
-              id="calculation-search"
-              type="search"
-              placeholder="Filter calculations..."
-              autocomplete="off"
-            />
-          </div>
-        </div>
-
-        <div class="table-wrapper">
-          <table id="calculation-table">
-            <thead>
-              <tr>
-                <th>Calculation</th>
-                <th>Status</th>
-                <th>Information</th>
-              </tr>
-            </thead>
-
-            <tbody>
-              ${renderCalculationRows()}
-            </tbody>
-          </table>
-        </div>
-      </section>
+      ${renderLoadCalculator()}
     </section>
   `;
 }
@@ -2587,6 +2543,7 @@ function bindCalculationSearch(): void {
 }
 
 function bindEvents(): void {
+  bindLoadCalculator();
   document
     .querySelectorAll<HTMLElement>(
       "[data-page]",
