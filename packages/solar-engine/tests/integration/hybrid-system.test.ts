@@ -6,7 +6,7 @@ import { runPeakDemand } from "../../src/modules/peak-demand/index.js";
 import { runPVSizing } from "../../src/modules/pv-sizing/index.js";
 import { runPvArray } from "../../src/modules/pv-array/index.js";
 import { runPvString } from "../../src/modules/pv-string/index.js";
-import { runBatterySizing } from "../../src/modules/battery/index.js";
+import { runBatterySizing } from "@ogwusearch/battery-engine";
 import { runInverterSizing } from "../../src/modules/inverter/index.js";
 import {
   runChargeControllerSizing,

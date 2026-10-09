@@ -31,7 +31,7 @@ import {
 
 import {
   runBatterySizing,
-} from "../../src/modules/battery/index.js";
+} from "@ogwusearch/battery-engine";
 
 import {
   runInverterSizing,

@@ -41,7 +41,29 @@ importers:
         specifier: ^5.0.1
         version: 5.0.1(@types/node@26.6.2)(vite@8.3.0(@types/node@26.6.2)(esbuild@0.28.2))
 
-  packages/circuit-engine: {}
+  packages/circuit-engine:
+    dependencies:
+      '@ogwusearch/engineering-core':
+        specifier: workspace:*
+        version: link:../engineering-core
+      '@ogwusearch/engineering-types':
+        specifier: workspace:*
+        version: link:../engineering-types
+      '@ogwusearch/engineering-units':
+        specifier: workspace:*
+        version: link:../engineering-units
+      '@ogwusearch/engineering-validation':
+        specifier: workspace:*
+        version: link:../engineering-validation
+    devDependencies:
+      typescript:
+        specifier: ^5.0.0
+        version: 5.9.3
+      vitest:
+        specifier: ^5.0.1
+        version: 5.0.1(@types/node@26.6.2)(vite@8.3.0(@types/node@26.6.2)(esbuild@0.28.2))
+
+  packages/electrical-engine: {}
 
   packages/engineering-core:
     dependencies:
@@ -146,6 +168,9 @@ importers:
 
   packages/solar-engine:
     dependencies:
+      '@ogwusearch/battery-engine':
+        specifier: workspace:*
+        version: link:../battery-engine
       '@ogwusearch/engineering-core':
         specifier: workspace:*
         version: link:../engineering-core

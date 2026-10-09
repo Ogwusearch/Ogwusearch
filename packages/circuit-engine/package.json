@@ -1,7 +1,38 @@
 {
   "name": "@ogwusearch/circuit-engine",
   "version": "0.1.0",
-  "private": true,
+  "description": "Circuit topology contracts and structural validation for Ogwusearch Engineering.",
+  "license": "MIT",
+  "type": "module",
   "main": "./dist/index.js",
-  "types": "./dist/index.d.ts"
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc --noEmit -p tsconfig.json",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@ogwusearch/engineering-core": "workspace:*",
+    "@ogwusearch/engineering-types": "workspace:*",
+    "@ogwusearch/engineering-units": "workspace:*",
+    "@ogwusearch/engineering-validation": "workspace:*"
+  },
+  "devDependencies": {
+    "typescript": "^5.0.0",
+    "vitest": "^5.0.1"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
 }

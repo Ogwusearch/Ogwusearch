@@ -1,0 +1,23 @@
+{
+  "name": "@ogwusearch/engineering-mcp",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@ogwusearch/engineering-core": "workspace:*",
+    "@ogwusearch/engineering-types": "workspace:*",
+    "@ogwusearch/engineering-telemetry": "workspace:*",
+    "@ogwusearch/solar-engine": "workspace:*",
+    "@ogwusearch/electrical-engine": "workspace:*",
+    "@ogwusearch/circuit-engine": "workspace:*"
+  },
+  "devDependencies": {
+    "typescript": "^5.9.0"
+  }
+}

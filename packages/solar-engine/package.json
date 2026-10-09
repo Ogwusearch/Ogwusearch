@@ -24,6 +24,7 @@
     "test:watch": "vitest"
   },
   "dependencies": {
+    "@ogwusearch/battery-engine": "workspace:*",
     "@ogwusearch/engineering-core": "workspace:*",
     "@ogwusearch/engineering-types": "workspace:*",
     "@ogwusearch/engineering-units": "workspace:*",
