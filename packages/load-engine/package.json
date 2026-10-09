@@ -27,7 +27,7 @@
     "@ogwusearch/engineering-validation": "workspace:*"
   },
   "devDependencies": {
-    "vitest": "^3.2.4",
-    "typescript": "^5.8.3"
+    "typescript": "^5.8.3",
+    "vitest": "^4.1.11"
   }
 }
