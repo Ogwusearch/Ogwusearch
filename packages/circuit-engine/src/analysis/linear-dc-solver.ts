@@ -6,7 +6,8 @@ export type LinearDcSolverErrorCode =
   | "REFERENCE_NODE_COUNT"
   | "UNSUPPORTED_COMPONENT"
   | "INVALID_COMPONENT_PARAMETER"
-  | "SINGULAR_SYSTEM";
+  | "SINGULAR_SYSTEM"
+  | "NON_FINITE_RESULT";
 
 export interface LinearDcSolverError {
   readonly code: LinearDcSolverErrorCode;
@@ -92,21 +93,38 @@ function solveLinearSystem(
   const size = input.length;
   if (size === 0) return [];
 
-  const matrix = input.map((row, index) => [
-    ...row,
-    inputRightHandSide[index]!,
-  ]);
+  // MNA matrices combine conductances with dimensionless source constraints.
+  // Scale each equation independently before applying a pivot tolerance.
+  const matrix: number[][] = [];
 
-  let scale = 0;
-  for (const row of input) {
-    for (const value of row) {
-      scale = Math.max(scale, Math.abs(value));
+  for (let index = 0; index < size; index += 1) {
+    const row = input[index]!;
+    const rightHandSide = inputRightHandSide[index]!;
+
+    if (
+      row.length !== size ||
+      !row.every(Number.isFinite) ||
+      !Number.isFinite(rightHandSide)
+    ) {
+      return undefined;
     }
+
+    let rowScale = 0;
+    for (const value of row) {
+      rowScale = Math.max(rowScale, Math.abs(value));
+    }
+
+    // A zero coefficient row cannot determine its corresponding unknown.
+    if (rowScale === 0 || !Number.isFinite(rowScale)) return undefined;
+
+    const scaledRow = row.map((value) => value / rowScale);
+    scaledRow.push(rightHandSide / rowScale);
+
+    if (!scaledRow.every(Number.isFinite)) return undefined;
+    matrix.push(scaledRow);
   }
 
-  if (scale === 0 || !Number.isFinite(scale)) return undefined;
-
-  const tolerance = scale * 1e-12;
+  const tolerance = 1e-12;
 
   for (let column = 0; column < size; column += 1) {
     let pivotRow = column;
@@ -133,7 +151,7 @@ function solveLinearSystem(
 
     for (let entry = column; entry <= size; entry += 1) {
       const currentValue = matrix[column]![entry]!;
-    matrix[column]![entry] = currentValue / pivot;
+      matrix[column]![entry] = currentValue / pivot;
     }
 
     for (let row = 0; row < size; row += 1) {
@@ -143,8 +161,8 @@ function solveLinearSystem(
 
       for (let entry = column; entry <= size; entry += 1) {
         const currentValue = matrix[row]![entry]!;
-      const pivotValue = matrix[column]![entry]!;
-      matrix[row]![entry] = currentValue - factor * pivotValue;
+        const pivotValue = matrix[column]![entry]!;
+        matrix[row]![entry] = currentValue - factor * pivotValue;
       }
     }
   }
@@ -370,32 +388,70 @@ export function solveLinearDcCircuit(
   nodeVoltages[referenceNodeId] = 0;
 
   for (const nodeId of nodeIds) {
-    nodeVoltages[nodeId] = voltageAt(nodeId);
+    const voltage = voltageAt(nodeId);
+
+    if (!Number.isFinite(voltage)) {
+      return failure(
+        "NON_FINITE_RESULT",
+        `The calculated voltage at node "${nodeId}" is not finite.`,
+        `nodes.${nodeId}`,
+      );
+    }
+
+    nodeVoltages[nodeId] = voltage;
   }
 
   const branchResults: Record<string, CircuitBranchResult> = {};
+
+  const addBranchResult = (
+    id: string,
+    result: CircuitBranchResult,
+  ): LinearDcSolverResult | undefined => {
+    const values = [
+      ["voltageVolts", result.voltageVolts],
+      ["currentAmps", result.currentAmps],
+      ["powerWatts", result.powerWatts],
+    ] as const;
+
+    for (const [parameter, value] of values) {
+      if (!Number.isFinite(value)) {
+        return failure(
+          "NON_FINITE_RESULT",
+          `The calculated ${parameter} for branch "${id}" is not finite.`,
+          `components.${id}.${parameter}`,
+        );
+      }
+    }
+
+    branchResults[id] = result;
+    return undefined;
+  };
 
   for (const resistor of resistors) {
     const voltageVolts =
       voltageAt(resistor.positive) - voltageAt(resistor.negative);
     const currentAmps = voltageVolts / resistor.resistance;
 
-    branchResults[resistor.id] = {
+    const error = addBranchResult(resistor.id, {
       voltageVolts,
       currentAmps,
       powerWatts: voltageVolts * currentAmps,
-    };
+    });
+
+    if (error !== undefined) return error;
   }
 
   for (const source of currentSources) {
     const voltageVolts =
       voltageAt(source.positive) - voltageAt(source.negative);
 
-    branchResults[source.id] = {
+    const error = addBranchResult(source.id, {
       voltageVolts,
       currentAmps: source.current,
       powerWatts: voltageVolts * source.current,
-    };
+    });
+
+    if (error !== undefined) return error;
   }
 
   for (let index = 0; index < voltageSources.length; index += 1) {
@@ -403,11 +459,15 @@ export function solveLinearDcCircuit(
     const voltageVolts =
       voltageAt(source.positive) - voltageAt(source.negative);
 
-    branchResults[source.id] = {
+    const currentAmps = solution[nodeCount + index]!;
+
+    const error = addBranchResult(source.id, {
       voltageVolts,
-      currentAmps: solution[nodeCount + index]!,
-      powerWatts: voltageVolts * solution[nodeCount + index]!,
-    };
+      currentAmps,
+      powerWatts: voltageVolts * currentAmps,
+    });
+
+    if (error !== undefined) return error;
   }
 
   return {

@@ -298,4 +298,117 @@ describe("solveLinearDcCircuit", () => {
     expect(result.errors[0]!.code).toBe("INVALID_COMPONENT_PARAMETER");
   });
 
+
+  it("solves a low-conductance resistor driven by an ideal voltage source", () => {
+    const circuit: CircuitDefinition = {
+      id: "low-conductance-circuit",
+      nodes: [
+        { id: "ground", isReference: true },
+        { id: "out" },
+      ],
+      components: [
+        {
+          id: "v1",
+          kind: "voltage-source",
+          terminals: { positive: "out", negative: "ground" },
+          parameters: { voltageVolts: 1 },
+        },
+        {
+          id: "r1",
+          kind: "resistor",
+          terminals: { positive: "out", negative: "ground" },
+          parameters: { resistanceOhms: 1e15 },
+        },
+      ],
+    };
+
+    const result = solveLinearDcCircuit(circuit);
+
+    expect(result.success).toBe(true);
+    if (!result.success) return;
+
+    expect(result.analysis.nodeVoltages.out).toBeCloseTo(1, 12);
+    expect(
+      result.analysis.branchResults.r1!.currentAmps / 1e-15,
+    ).toBeCloseTo(1, 10);
+    expect(
+      result.analysis.branchResults.r1!.powerWatts / 1e-15,
+    ).toBeCloseTo(1, 10);
+  });
+
+  it("solves a high-resistance divider without misclassifying it as singular", () => {
+    const circuit: CircuitDefinition = {
+      id: "high-resistance-divider",
+      nodes: [
+        { id: "ground", isReference: true },
+        { id: "input" },
+        { id: "midpoint" },
+      ],
+      components: [
+        {
+          id: "v1",
+          kind: "voltage-source",
+          terminals: { positive: "input", negative: "ground" },
+          parameters: { voltageVolts: 1 },
+        },
+        {
+          id: "r1",
+          kind: "resistor",
+          terminals: { positive: "input", negative: "midpoint" },
+          parameters: { resistanceOhms: 1e15 },
+        },
+        {
+          id: "r2",
+          kind: "resistor",
+          terminals: { positive: "midpoint", negative: "ground" },
+          parameters: { resistanceOhms: 1e15 },
+        },
+      ],
+    };
+
+    const result = solveLinearDcCircuit(circuit);
+
+    expect(result.success, JSON.stringify(result)).toBe(true);
+    if (!result.success) return;
+
+    expect(result.analysis.nodeVoltages.input).toBeCloseTo(1, 12);
+    expect(result.analysis.nodeVoltages.midpoint).toBeCloseTo(0.5, 12);
+    expect(
+      result.analysis.branchResults.r1!.currentAmps / 5e-16,
+    ).toBeCloseTo(1, 10);
+    expect(
+      result.analysis.branchResults.r2!.currentAmps / 5e-16,
+    ).toBeCloseTo(1, 10);
+  });
+
+  it("rejects non-finite derived branch power", () => {
+    const circuit: CircuitDefinition = {
+      id: "overflow-power-circuit",
+      nodes: [
+        { id: "ground", isReference: true },
+        { id: "out" },
+      ],
+      components: [
+        {
+          id: "v1",
+          kind: "voltage-source",
+          terminals: { positive: "out", negative: "ground" },
+          parameters: { voltageVolts: 1e200 },
+        },
+        {
+          id: "r1",
+          kind: "resistor",
+          terminals: { positive: "out", negative: "ground" },
+          parameters: { resistanceOhms: 1 },
+        },
+      ],
+    };
+
+    const result = solveLinearDcCircuit(circuit);
+
+    expect(result.success).toBe(false);
+    if (result.success) return;
+    expect(result.errors[0]!.code).toBe("NON_FINITE_RESULT");
+  });
+
 });
