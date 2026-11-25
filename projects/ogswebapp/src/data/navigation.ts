@@ -13,6 +13,10 @@ export const navigation: NavigationItem[] = [
     href: "/projects",
   },
   {
+    label: "Engineering",
+    href: "/engineering",
+  },
+  {
     label: "Experiments",
     href: "/experiments",
   },

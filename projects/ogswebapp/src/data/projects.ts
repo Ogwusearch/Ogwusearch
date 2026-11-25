@@ -28,93 +28,88 @@ export const projects: Project[] = [
     description:
       "Solar engineering software for system auditing, analysis, and design workflows.",
     category: "Engineering Software",
-    status: "Active",
-
-    technologies: [
-      "React",
-      "TypeScript",
-      "Vite",
-      "SQLite",
-    ],
-
+    status: "In development",
+    technologies: ["React", "TypeScript", "Vite"],
     featured: true,
-
     overview:
       "Solar engineering software for system auditing, analysis, and design workflows.",
-
     built:
       "A software application focused on solar system auditing, analysis, and engineering design workflows.",
-
     engineeringDetails:
       "The project includes engineering workflows for load auditing, solar sizing, battery sizing, and related system calculations.",
   },
-
   {
     name: "Circuit Simulator",
     slug: "circuit-simulator",
     description:
-      "An electronics and circuit simulation project for exploring circuit behavior and engineering concepts.",
+      "A circuit-analysis and simulation project for modelling electrical networks and exploring their behaviour.",
     category: "Electronics",
-    status: "Active",
-
-    technologies: [
-      "Python",
-      "Electronics",
-      "Simulation",
-    ],
-
+    status: "In development",
+    technologies: ["Python", "Circuit Analysis", "Numerical Simulation"],
     featured: true,
-
     overview:
-      "An electronics and circuit simulation project for exploring circuit behavior and engineering concepts.",
-
+      "A software project exploring the modelling and analysis of electronic circuits and their electrical behaviour.",
     built:
-      "A circuit simulation environment for experimenting with electronic circuits and simulation models.",
+      "A developing simulation environment for modelling circuits and evaluating electrical behaviour.",
   },
-
   {
     name: "MineCore",
     slug: "minecore",
     description:
-      "Mining operations software focused on structured operational and data workflows.",
+      "A multi-tenant mining operations platform designed to support mining organizations, sites, and operational workflows.",
     category: "Business Software",
-    status: "Development",
-
-    technologies: [
-      "Python",
-      "PostgreSQL",
-      "React",
-    ],
-
+    status: "In development",
+    technologies: ["Python", "PostgreSQL", "React"],
     featured: true,
-
     overview:
-      "Mining operations software focused on structured operational and data workflows.",
-
+      "MineCore is being developed as a multi-tenant platform for mining organizations managing one or more sites and mineral operations.",
     built:
-      "A mining software project focused on structured operational and data workflows.",
+      "Development is focused on the multi-tenant foundation and the operational workflows needed by mining organizations managing multiple sites.",
   },
-
   {
     name: "Engineering Core",
     slug: "engineering-core",
     description:
-      "Reusable engineering calculation, validation, and result-processing infrastructure.",
+      "A reusable TypeScript foundation for validated engineering calculations and structured, traceable results.",
     category: "Engineering Infrastructure",
-    status: "Development",
-
-    technologies: [
-      "TypeScript",
-      "Engineering",
-      "Testing",
-    ],
-
+    status: "In development",
+    technologies: ["TypeScript", "Validation", "Automated Testing"],
     featured: true,
-
     overview:
-      "Reusable engineering calculation, validation, and result-processing infrastructure.",
-
+      "Shared infrastructure for engineering types, units, validation, calculations, and structured results.",
     built:
-      "Reusable infrastructure for engineering calculations, validation, metadata, and structured calculation results.",
+      "Shared packages for engineering types, units, validation, calculation contracts, and structured results.",
+  },
+  {
+    name: "PostgreSQL Project Manager",
+    slug: "postgres-project-manager",
+    description:
+      "A multi-tenant PostgreSQL management platform for administering projects, database instances, migrations, backups, and access.",
+    category: "Database Platform",
+    status: "In development",
+    technologies: ["TypeScript", "React", "PostgreSQL", "Node.js"],
+    featured: true,
+    overview:
+      "An independent platform for managing PostgreSQL projects and database environments.",
+    built:
+      "An authenticated management application with tenant-scoped projects, database instances, role-based access, and operational management workflows.",
+    architecture:
+      "A separate repository and application architecture, independent of the Ogwusearch engineering monorepo.",
+  },
+  {
+    name: "4pol PCB Fab",
+    slug: "4pol-pcb-fab",
+    description:
+      "Development of a modular desktop PCB manufacturing machine family for local electronics prototyping and production.",
+    category: "Hardware & Manufacturing",
+    status: "In development",
+    technologies: ["KiCad", "Electronics", "Mechanical Design", "CNC"],
+    featured: true,
+    overview:
+      "A hardware engineering project exploring a family of machines for PCB fabrication and electronics manufacturing.",
+    built:
+      "A modular machine-development programme covering PCB milling, via processing, paste dispensing, pick-and-place, reflow, and testing.",
+    engineeringDetails:
+      "The project separates manufacturing functions into dedicated machines, with engineering documentation, design decisions, and development plans.",
   },
 ];
